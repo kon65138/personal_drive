@@ -3,17 +3,25 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev:server": "nodemon --watch app.js --watch routes --watch controllers --watch config --watch lib app.js",
+    "dev:sync": "browser-sync start --proxy \"localhost:3000\" --port 3001 --files \"views/**/*.ejs, public/**/*\" --no-open",
+    "dev": "concurrently -n server,sync -c blue,green \"npm:dev:server\" \"npm:dev:sync\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^10.0.3",
+    "nodemon": "^3.1.14",
     "prisma": "^7.9.0"
   },
   "overrides": {
-    "find-my-way": "^9.7.0"
+    "find-my-way": "^9.7.0",
+    "shell-quote": "^1.10.0",
+    "immutable": "^5.1.9"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
