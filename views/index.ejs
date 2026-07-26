@@ -3,9 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/index.ejs" />
+    <style>
+      body {
+        background-image: url('<%= wallpaper.landscape %>');
+      }
+
+      @media (orientation: portrait) {
+        body {
+          background-image: url('<%= wallpaper.portrait %>');
+        }
+      }
+    </style>
+
+    <title>Personal Drive</title>
   </head>
   <body>
-    <div>Hello world!</div>
+    <div>hellow world</div>
   </body>
 </html>

@@ -20,8 +20,7 @@
   },
   "overrides": {
     "find-my-way": "^9.7.0",
-    "shell-quote": "^1.10.0",
-    "immutable": "^5.1.9"
+    "shell-quote": "^1.10.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
