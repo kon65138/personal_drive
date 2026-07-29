@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10vw 0 10vw;
+  color: rgb(255, 0, 0);
+}
+
+#title {
+  margin-top: 10vw;
+  font-size: 5rem;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+a {
+  font-size: 2rem;
+  font-weight: bold;
+  max-width: fit-content;
+}

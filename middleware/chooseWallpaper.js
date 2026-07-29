@@ -9,10 +9,19 @@ async function chooseWallpaper(req, res, next) {
     path.join(__dirname, '..', 'public', 'imgs', 'landscape'),
   );
 
-  const portrait = `/imgs/portrait/${portraitFiles[Math.floor(Math.random() * portraitFiles.length)]}`;
-  const landscape = `/imgs/landscape/${landscapeFiles[Math.floor(Math.random() * landscapeFiles.length)]}`;
+  const portRandNum = Math.floor(Math.random() * portraitFiles.length);
+  const landRandNum = Math.floor(Math.random() * landscapeFiles.length);
 
-  res.locals.wallpaper = { portrait, landscape };
+  const portraitFile = portraitFiles[portRandNum];
+  const landscapeFile = landscapeFiles[landRandNum];
+  const thumbOf = (f) => f.replace(/\.webp$/, '_thumb.webp');
+
+  res.locals.wallpaper = {
+    portrait: `/imgs/portrait/${portraitFile}`,
+    portraitThumb: `/imgs/portraitThumbnails/${thumbOf(portraitFile)}`,
+    landscape: `/imgs/landscape/${landscapeFile}`,
+    landscapeThumb: `/imgs/landscapeThumbnails/${thumbOf(landscapeFile)}`,
+  };
   next();
 }
 

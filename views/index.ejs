@@ -4,22 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/index.ejs" />
+    <link rel="stylesheet" href="css/index.css" />
     <style>
       body {
-        background-image: url('<%= wallpaper.landscape %>');
+        background-image:
+          url('<%= wallpaper.landscape %>'),
+          url('<%= wallpaper.landscapeThumb %>');
+        background-size: cover;
+        background-position: center;
       }
 
       @media (orientation: portrait) {
         body {
-          background-image: url('<%= wallpaper.portrait %>');
+          background-image:
+            url('<%= wallpaper.portrait %>'),
+            url('<%= wallpaper.portraitThumb %>');
         }
       }
     </style>
-
     <title>Personal Drive</title>
   </head>
   <body>
-    <div>hellow world</div>
+    <header>
+      <h1 id="title">Welcome To Personal Drive</h1>
+    </header>
+    <div class="buttons">
+      <a href="/login" id="login">Login</a>
+      <a href="/signUp" id="signUp">Sign Up</a>
+    </div>
+    <% console.log(wallpaper) %>
   </body>
 </html>
