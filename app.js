@@ -16,6 +16,7 @@ const passport = require('passport');
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/loginRouter');
+const signUpRouter = require('./routes/signUpRouter');
 
 require('./config/passport');
 
@@ -61,6 +62,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
+app.use('/signUp', signUpRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
