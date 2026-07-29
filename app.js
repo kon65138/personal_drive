@@ -15,6 +15,7 @@ const prisma = new PrismaClient({ adapter });
 const passport = require('passport');
 
 const indexRouter = require('./routes/index');
+const loginRouter = require('./routes/loginRouter');
 
 require('./config/passport');
 
@@ -59,6 +60,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', indexRouter);
+app.use('/login', loginRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);

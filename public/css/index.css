@@ -8,6 +8,8 @@ body {
 #title {
   margin-top: 10vw;
   font-size: 5rem;
+  background: rgba(0, 0, 0, 0.459);
+  max-width: fit-content;
 }
 
 .buttons {
@@ -17,6 +19,7 @@ body {
 }
 
 a {
+  background: rgba(0, 0, 0, 0.459);
   font-size: 2rem;
   font-weight: bold;
   max-width: fit-content;
