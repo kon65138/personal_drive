@@ -32,11 +32,11 @@
       <form method="post" id="signUpForm">
         <div class="firstName">
           <label for="firstName">first Name:</label>
-          <input type="text" name="firstName" id="firstName" required />
+          <input type="text" name="firstName" id="firstName" value="<%= values ? values.firstName : '' %>" required />
         </div>
         <div class="username">
           <label for="username">username:</label>
-          <input type="text" name="username" id="username" required />
+          <input type="text" name="username" id="username" value="<%= values ? values.username : '' %>" required />
         </div>
         <div class="password">
           <label for="password">password:</label>
@@ -51,7 +51,13 @@
             required
           />
         </div>
-        <span class="errorList"></span>
+        <span class="errorList">
+          <ul>
+            <% if (errors) {errors.forEach( error => { %>
+                    <li><%= error.msg %></li>
+            <% })} %>
+          </ul>
+        </span>
         <button type="submit">Sign Up</button>
       </form>
     </div>
