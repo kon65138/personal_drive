@@ -8,10 +8,10 @@ async function findByUsername(username) {
   return user;
 }
 
-async function createUser({ username, name, hash, salt }) {
+async function createUser({ username, name, hash, salt, privileged }) {
   const result = await pool.query(
-    'INSERT INTO users (username, name, hash, salt) VALUES ($1, $2, $3, $4) RETURNING *',
-    [username, name, hash, salt],
+    'INSERT INTO users (username, name, hash, salt, privileged) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    [username, name, hash, salt, privileged],
   );
   const newUser = result.rows[0];
   return newUser;

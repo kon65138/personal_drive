@@ -38,7 +38,13 @@
           <label for="password">password:</label>
           <input type="password" name="password" id="password" required />
         </div>
-        <span class="errorList"></span>
+        <span class="errorList">
+          <ul>
+            <% if (errors) {errors.forEach( error => { %>
+                    <li><%= error.msg %></li>
+            <% })} %>
+          </ul>
+        </span>
         <button type="submit">Login</button>
       </form>
     </div>

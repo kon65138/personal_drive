@@ -10,7 +10,7 @@ function signUpGet(req, res, next) {
 
 async function signUpPost(req, res, next) {
   const { salt, hash } = genPassword(req.body.password);
-  const user = prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       username: req.body.username,
       firstName: req.body.firstName,

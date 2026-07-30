@@ -3,20 +3,15 @@ const path = require('node:path');
 const express = require('express');
 const expressSession = require('express-session');
 require('dotenv/config');
-const { PrismaPg } = require('@prisma/adapter-pg'); // For other db adapters, see Prisma docs
-const { PrismaClient } = require('./generated/prisma/client');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
-
-// DATABASE_URL defined in env file included in prisma.config.js; see Prisma docs
-const connectionString = `${process.env.DATABASE_URL}`;
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+const { prisma } = require('./lib/prisma');
 
 const passport = require('passport');
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/loginRouter');
 const signUpRouter = require('./routes/signUpRouter');
+const chooseWallpaper = require('./middleware/chooseWallpaper');
 
 require('./config/passport');
 
@@ -60,6 +55,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(chooseWallpaper);
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/signUp', signUpRouter);

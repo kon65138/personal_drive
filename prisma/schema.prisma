@@ -23,7 +23,8 @@ model Session {
 model User { 
   id    Int     @id @default(autoincrement()) 
   username String  @unique 
-  name  String?
+  firstName  String?
   hash String 
   salt String
+  privileged Boolean @default(false)
 }

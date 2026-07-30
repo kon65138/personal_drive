@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const { findByUsername, findById } = require('../db/queries');
 const { validPassword } = require('../lib/passwordUtils');
+const { prisma } = require('../lib/prisma');
 
 const customFields = {
   usernameField: 'username',
@@ -9,7 +9,10 @@ const customFields = {
 };
 
 const verifyCallback = (username, password, done) => {
-  findByUsername(username)
+  prisma.user
+    .findUnique({
+      where: { username: username },
+    })
     .then((user) => {
       if (!user) {
         return done(null, false);
@@ -37,7 +40,12 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((userId, done) => {
-  findById(userId)
+  prisma.user
+    .findUnique({
+      where: {
+        id: userId,
+      },
+    })
     .then((user) => {
       done(null, user);
     })

@@ -1,9 +1,19 @@
 const { Router } = require('express');
-const chooseWallpaper = require('../middleware/chooseWallpaper');
 const loginController = require('../controllers/loginController');
+const passport = require('passport');
 
 const loginRouter = Router();
 
-loginRouter.get('/', chooseWallpaper, loginController.loginGet);
+loginRouter.get('/', loginController.loginGet);
+
+loginRouter.post(
+  '/',
+  passport.authenticate('local', {
+    failureMessage: 'incorrect creds',
+    failureRedirect: 'login',
+    successMessage: 'successfully logged in',
+    successRedirect: '/',
+  }),
+);
 
 module.exports = loginRouter;
