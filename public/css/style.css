@@ -47,8 +47,8 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 input:autofill {
-  -webkit-text-fill-color: rgb(255, 0, 0);
-  caret-color: rgb(255, 0, 0);
+  -webkit-text-fill-color: white;
+  caret-color: white;
   -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.459) inset;
   box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.459) inset;
   transition: background-color 9999s ease-in-out 0s;

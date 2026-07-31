@@ -2,7 +2,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0 10vw 0 10vw;
-  color: rgb(255, 0, 0);
+  color: white;
   align-items: center;
   gap: 5vw;
 }
