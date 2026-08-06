@@ -11,6 +11,11 @@ body {
   margin: 0;
   background-size: cover;
   background-position: center;
+  background-image:
+    url('../imgs/thumbnails/roooomm4klossless.webp'),
+    url('../imgs/thumbnails/roooomm4k.webp'),
+    url('../imgs/thumbnails/roooomm1080_100.webp'),
+    url('../imgs/thumbnails/roooomm1080_85.webp');
 }
 
 a {
@@ -52,4 +57,55 @@ input:autofill {
   -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.459) inset;
   box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.459) inset;
   transition: background-color 9999s ease-in-out 0s;
+}
+
+.blackSilverGrad:hover {
+  background: #000000;
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 25%,
+    rgba(32, 32, 33, 1) 50%,
+    rgba(94, 94, 99, 1) 75%,
+    rgba(126, 126, 132, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 25%,
+    rgba(32, 32, 33, 1) 50%,
+    rgba(94, 94, 99, 1) 75%,
+    rgba(126, 126, 132, 1) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 1) 25%,
+    rgba(32, 32, 33, 1) 50%,
+    rgba(94, 94, 99, 1) 75%,
+    rgba(126, 126, 132, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(
+  startColorstr="#000000",
+  endColorstr="#7E7E84",
+  GradientType=1
+);
+}
+
+#title {
+  color: white;
+  background: none;
+  text-align: left;
+  width: fit-content;
+}
+
+.title a {
+  padding-left: 2vw;
+  width: fit-content;
+}
+
+.title {
+  display: flex;
+  width: 100%;
+}
+
+.title {
+  width: 100%;
 }

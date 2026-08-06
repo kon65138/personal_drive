@@ -5,30 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/login.css" />
-    <style>
-      body {
-        background-image:
-          url('<%= wallpaper.landscape %>'),
-          url('<%= wallpaper.landscapeThumb %>');
-        background-size: cover;
-        background-position: center;
-      }
-
-      @media (orientation: portrait) {
-        body {
-          background-image:
-            url('<%= wallpaper.portrait %>'),
-            url('<%= wallpaper.portraitThumb %>');
-        }
-      }
-    </style>
     <title>Personal Drive</title>
   </head>
   <body>
-    <header>
-      <a href="/"><h1 id="title">Personal Drive</h1></a>
-    </header>
+    <%- include('partials/title') %>
     <div class="loginContainer">
+      <h2>login</h2>
       <form method="post" id="loginForm">
         <div class="username">
           <label for="username">username:</label>

@@ -8,8 +8,11 @@ body {
 #title {
   margin-top: 10vw;
   font-size: 5rem;
-  background: rgba(0, 0, 0, 0.459);
   max-width: fit-content;
+  display: inline-block;
+  font-size: 120px;
+  font-weight: 900;
+  color: white;
 }
 
 .buttons {
@@ -19,8 +22,9 @@ body {
 }
 
 a {
-  background: rgba(0, 0, 0, 0.459);
+  border-radius: 40px;
+  padding: 0.5rem 1rem 0.5rem 1rem;
   font-size: 2rem;
   font-weight: bold;
-  max-width: fit-content;
+  width: 10rem;
 }

@@ -56,7 +56,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(chooseWallpaper);
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/signUp', signUpRouter);
