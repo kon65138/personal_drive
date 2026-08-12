@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/login.css" />
+    <script src="/js/pageTransition.js" defer></script>
     <title>Personal Drive</title>
   </head>
   <body>
-    <%- include('partials/title') %>
+    <div class="left">
+      <%- include('partials/title') %>
     <div class="loginContainer">
-      <h2>login</h2>
+      <h2>Welcome back</h2>
       <form method="post" id="loginForm">
         <div class="username">
-          <label for="username">username:</label>
-          <input type="text" name="username" id="username" required />
+          <input type="text" name="username" id="username" placeholder="Enter email or username" required />
         </div>
         <div class="password">
-          <label for="password">password:</label>
-          <input type="password" name="password" id="password" required />
+          <input type="password" name="password" id="password" placeholder="Enter password" required />
         </div>
         <span class="errorList">
           <ul>
@@ -30,5 +30,7 @@
         <button type="submit">Login</button>
       </form>
     </div>
+    </div>
+    <div class="right"></div>
   </body>
 </html>

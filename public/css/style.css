@@ -1,3 +1,43 @@
+:root {
+  color-scheme: light dark;
+
+  /* surfaces */
+  --bg: #ffffff;
+  --surface: #f6f8fa;
+  --border: #d0d7de;
+
+  /* text */
+  --text: #1f2328;
+  --text-muted: #656d76;
+
+  /* interactive */
+  --accent: #0969da;
+  --accent-hover: #0550ae;
+  --accent-text: #ffffff;
+
+  /* status */
+  --danger: #cf222e;
+  --success: #1a7f37;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+
+    --accent: #4493f8;
+    --accent-hover: #6cb6ff;
+    --accent-text: #ffffff;
+
+    --danger: #f85149;
+    --success: #3fb950;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -108,4 +148,34 @@ input:autofill {
 
 .title {
   width: 100%;
+}
+
+/* page transitions */
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* the wallpaper lives on <body>, so animating only its children leaves the
+   background image untouched while everything on top of it fades */
+body > * {
+  animation: pageFadeIn 100ms ease-out backwards;
+}
+
+body.leaving > * {
+  opacity: 0;
+  transition: opacity 100ms ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body > *,
+  body.leaving > * {
+    animation: none;
+    transition: none;
+  }
 }

@@ -27,6 +27,7 @@ const view = `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/${name}.css" />
+    <script src="/js/pageTransition.js" defer></script>
     <title>Personal Drive</title>
   </head>
   <body>

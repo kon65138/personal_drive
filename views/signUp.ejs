@@ -5,32 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/signUp.css" />
+    <script src="/js/pageTransition.js" defer></script>
     <title>Personal Drive</title>
   </head>
   <body>
-    <header>
-      <a href="/"><h1 id="title">Personal Drive</h1></a>
-    </header>
-    <div class="loginContainer">
+    <div class="left">
+    <%- include('partials/title') %>
+    <div class="signUpContainer">
+      <h2>Welcome to Rooms</h2>
       <form method="post" id="signUpForm">
         <div class="firstName">
-          <label for="firstName">first Name:</label>
-          <input type="text" name="firstName" id="firstName" value="<%= values ? values.firstName : '' %>" required />
+          <input type="text" name="firstName" id="firstName" value="<%= values ? values.firstName : '' %>" placeholder="Enter first name" required />
         </div>
         <div class="username">
-          <label for="username">username:</label>
-          <input type="text" name="username" id="username" value="<%= values ? values.username : '' %>" required />
+          <input type="text" name="username" id="username" value="<%= values ? values.username : '' %>" placeholder="Enter username or email" required />
         </div>
         <div class="password">
-          <label for="password">password:</label>
-          <input type="password" name="password" id="password" required />
+          <input type="password" name="password" id="password" placeholder="Enter password" required />
         </div>
         <div class="confirmPassword">
-          <label for="confirmPassword">confirm password:</label>
           <input
             type="password"
             name="confirmPassword"
             id="confirmPassword"
+            placeholder="Enter password again"
             required
           />
         </div>
@@ -43,6 +41,8 @@
         </span>
         <button type="submit">Sign Up</button>
       </form>
-    </div>
+    </div></div>
+    <div class="right"></div>
+    
   </body>
 </html>
