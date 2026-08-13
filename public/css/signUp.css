@@ -14,15 +14,8 @@ body {
 }
 
 .left .signUpContainer {
-  width: 50vw;
+  width: 30vw;
   padding: 2rem;
-}
-
-#title {
-  justify-self: center;
-  margin-top: 2vw;
-  font-size: 4rem;
-  color: var(--text);
 }
 
 a {
@@ -53,6 +46,8 @@ h2 {
   background-color: var(--surface);
   padding: 0.5rem 1rem 0.5rem 1rem;
   border-radius: 20px;
+  max-width: 80%;
+  width: 80%;
 }
 
 .errorList {

@@ -11,8 +11,8 @@ const passport = require('passport');
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/loginRouter');
 const signUpRouter = require('./routes/signUpRouter');
-const chooseWallpaper = require('./middleware/chooseWallpaper');
 const dashboardRouter = require('./routes/dashboardRouter');
+const logoutRouter = require('./routes/logoutRouter');
 
 require('./config/passport');
 
@@ -60,6 +60,7 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/signUp', signUpRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/logout', logoutRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);

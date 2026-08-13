@@ -83,6 +83,13 @@ button {
   cursor: pointer;
 }
 
+#title {
+  justify-self: center;
+  margin-top: 2vw;
+  font-size: 4rem;
+  color: var(--text);
+}
+
 :is(button, input, select, textarea):focus-visible {
   outline: 2px solid currentColor;
 }

@@ -9,6 +9,24 @@
     <title>Personal Drive</title>
   </head>
   <body>
-    <div>dashboard</div>
+    <%- include('partials/title') %>
+    <div class="container">
+      <div class="top">
+        <button id="upload">upload</button>
+        <div class="searchBar">
+          <input
+            type="text"
+            id="search"
+            placeholder="search for file or folder"
+          />
+        </div>
+        <button id="settings">settings</button>
+      </div>
+      <div class="bottom">
+        <div class="folderBar"></div>
+        <div class="fileViewer"></div>
+        <div class="storageMeter"></div>
+      </div>
+    </div>
   </body>
 </html>
