@@ -43,8 +43,10 @@
 
   // forms navigate on their own once the server responds; adding the class
   // without preventing the submit lets the fade run during the round trip
-  document.addEventListener('submit', () => {
+  document.addEventListener('submit', (event) => {
     if (reduced.matches) return;
+    // forms handled by fetch never navigate, so fading out would strand the page
+    if (event.target.closest('[data-no-transition]')) return;
     document.body.classList.add('leaving');
   });
 })();
