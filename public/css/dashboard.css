@@ -74,7 +74,7 @@ body {
 }
 
 .folderBar,
-.fileViewer,
+.fileExplorer,
 .storageMeter {
   display: flex;
   flex-direction: column;
@@ -129,9 +129,74 @@ body {
   align-items: center;
 }
 
-.fileViewer {
+.fileExplorer {
   height: 100%;
   flex: 1;
+}
+
+.fileExplorerHeader {
+  padding: 0.4rem 0.4rem 0 0.4rem;
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.fileExplorerHeader div {
+  font-size: 1.2rem;
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+}
+
+.fileExplorerHeader .name {
+  flex: 1;
+}
+
+/* mirrors .fileExplorerHeader so the columns line up */
+.fileRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.fileRow > * {
+  font-size: 1.2rem;
+  padding: 0.1rem 0.5rem;
+}
+
+.fileRow .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* stretches the download link across the whole row, so clicking anywhere
+   downloads — the options button sits above it and stays separately clickable */
+.fileRow .name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.fileRow .options {
+  position: relative;
+  justify-content: center;
+}
+
+/* the header has no button, so it needs a matching gap to stay aligned */
+.fileExplorerHeader .optionsSpacer,
+.fileRow .options {
+  width: 3rem;
+}
+
+.fileRow:hover {
+  background: var(--bg);
+}
+
+.emptyExplorer {
+  padding: 0.5rem 0.9rem;
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .storageMeter {

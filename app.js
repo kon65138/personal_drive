@@ -5,6 +5,7 @@ const expressSession = require('express-session');
 require('dotenv/config');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { prisma } = require('./lib/prisma');
+const { formatBytes, formatDate } = require('./lib/format');
 
 const passport = require('passport');
 
@@ -49,10 +50,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// makes `currentUser` and `dev` available in every EJS template
+// makes `currentUser`, `dev` and the display helpers available in every template
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.dev = process.env.NODE_ENV !== 'production';
+  res.locals.formatBytes = formatBytes;
+  res.locals.formatDate = formatDate;
   next();
 });
 
