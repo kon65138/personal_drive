@@ -84,7 +84,49 @@ body {
 
 .folderBar {
   height: 100%;
+  display: flex;
+  flex-direction: column;
   flex: 0.3;
+}
+
+.folderBar h2 {
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0.1rem;
+}
+
+.folder {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  margin: 0;
+  font-size: 1.3rem;
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+}
+
+.folder:hover,
+#addFolderBtn:hover {
+  background: var(--bg);
+}
+
+#addFolderBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: 1.3rem;
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.options {
+  display: flex;
+  align-items: center;
 }
 
 .fileViewer {

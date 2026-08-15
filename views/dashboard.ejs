@@ -34,7 +34,24 @@
         <button id="settings">settings</button>
       </div>
       <div class="bottom">
-        <div class="folderBar"></div>
+        <div class="folderBar">
+          <h2 class="folderTitle">folders</h2>
+
+          <div id="rootFolder" class="folder">
+            <div class="name">Root</div>
+            <%- include('partials/folderOptions') %>
+          </div>
+
+          <% if (locals.currentFolders && currentFolders.length) { %>
+            <% currentFolders.forEach((folder) => { %>
+              <div class="folder" data-id="<%= folder.id %>">
+                <div class="name"><%= folder.name %></div>
+                <%- include('partials/folderOptions') %>
+              </div>
+            <% })} %>
+              
+          <button id="addFolderBtn">+</button>
+        </div>
         <div class="fileViewer"></div>
         <div class="storageMeter"></div>
       </div>
