@@ -1,19 +1,29 @@
 const { Router } = require('express');
+const { UPLOAD_DIR } = require('../lib/storage');
 const dashboardController = require('../controllers/dashboardController');
 const { isAuth } = require('../middleware/authMiddleware');
 const multer = require('multer');
-const upload = multer({ dest: './public/data/uploads/' });
+
+const upload = multer({
+  dest: UPLOAD_DIR,
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 },
+});
 
 const dashboardRouter = Router();
 
 dashboardRouter.get('/', isAuth, dashboardController.dashboardGet);
 
-dashboardRouter.post('/uploads', isAuth, upload.single('file'), (req, res) => {
-  // multer leaves req.file undefined when no file came through
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
-  res.json({ filename: req.file.filename, size: req.file.size });
-});
+dashboardRouter.get(
+  '/files/:id',
+  isAuth,
+  dashboardController.dashboardDownload,
+);
+
+dashboardRouter.post(
+  '/uploads',
+  isAuth,
+  upload.single('file'),
+  dashboardController.dashboardUpload,
+);
 
 module.exports = dashboardRouter;

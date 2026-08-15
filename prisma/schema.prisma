@@ -20,11 +20,59 @@ model Session {
   expiresAt   DateTime
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  username String  @unique 
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
   firstName  String?
-  hash String 
-  salt String
-  privileged Boolean @default(false)
+  hash       String
+  salt       String
+  privileged Boolean  @default(false)
+
+  // every user gets exactly one root folder; @unique makes a second one
+  // impossible at the database level rather than by convention
+  rootFolder   Folder? @relation("UserRoot", fields: [rootFolderId], references: [id])
+  rootFolderId Int?    @unique
+
+  folders    Folder[] @relation("FolderOwner")
+  files      File[]
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner     User     @relation("FolderOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   Int
+
+  // the root is the only folder with a null parent
+  parent    Folder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  Int?
+  children  Folder[] @relation("FolderTree")
+
+  files     File[]
+  rootOf    User?    @relation("UserRoot")
+
+  @@unique([ownerId, parentId, name])
+  @@index([ownerId])
+}
+
+model File {
+  id         Int      @id @default(autoincrement())
+  name       String   // original filename, shown to the user
+  storageKey String   @unique // the generated filename on the volume
+  mimeType   String
+  size       BigInt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    Int
+
+  folder     Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId   Int
+
+  @@unique([folderId, name])
+  @@index([ownerId])
 }

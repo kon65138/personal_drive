@@ -43,6 +43,7 @@ body {
 #uploadForm label,
 #settings {
   display: flex;
+
   align-items: center;
   white-space: nowrap;
   padding: 0.5rem 1rem;
@@ -50,6 +51,14 @@ body {
   background-color: var(--accent);
   color: var(--accent-text);
   font-weight: bold;
+}
+
+#settings {
+  align-self: stretch;
+}
+
+#uploadForm label:hover {
+  cursor: pointer;
 }
 
 .visuallyHidden {
