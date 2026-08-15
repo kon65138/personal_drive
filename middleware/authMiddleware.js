@@ -2,7 +2,7 @@ function isAuth(req, res, next) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.redirect('/signUp');
+    res.redirect('/login');
   }
 }
 

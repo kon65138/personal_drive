@@ -26,5 +26,5 @@ a {
   padding: 0.5rem 1rem 0.5rem 1rem;
   font-size: 2rem;
   font-weight: bold;
-  width: 10rem;
+  width: fit-content;
 }
