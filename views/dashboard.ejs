@@ -39,14 +39,14 @@
 
           <div id="rootFolder" class="folder">
             <div class="name">Root</div>
-            <%- include('partials/optionsButton') %>
+            <%- include('partials/folderOptions') %>
           </div>
 
           <% if (locals.currentFolders && currentFolders.length) { %>
             <% currentFolders.forEach((folder) => { %>
               <div class="folder" data-id="<%= folder.id %>">
                 <div class="name"><%= folder.name %></div>
-                <%- include('partials/optionsButton') %>
+                <%- include('partials/folderOptions') %>
               </div>
             <% })} %>
               
@@ -58,31 +58,33 @@
             <div>|</div>
             <div class="size">size</div>
             <div>|</div>
-            <div class="dateAdded">added</div>
-            <div class="optionsSpacer" aria-hidden="true"></div>
+            <div class="dateAdded"> date added</div>
           </div>
 
           <% if (locals.currentFolderContent && currentFolderContent.length) { %>
             <% currentFolderContent.forEach((file) => { %>
-              <div class="fileRow" data-id="<%= file.id %>">
-                <a
-                  class="name"
-                  href="/dashboard/files/<%= file.id %>"
-                  download
-                  ><%= file.name %></a
-                >
+              <a
+                class="fileRow"
+                href="/dashboard/files/<%= file.id %>"
+                data-id="<%= file.id %>"
+                download
+              >
+                <div class="name"><%= file.name %></div>
                 <div>|</div>
                 <div class="size"><%= formatBytes(file.size) %></div>
                 <div>|</div>
                 <div class="dateAdded"><%= formatDate(file.createdAt) %></div>
-                <%- include('partials/optionsButton') %>
-              </div>
+              </a>
             <% }) %>
           <% } else { %>
             <p class="emptyExplorer">This folder is empty</p>
           <% } %>
         </div>
-        <div class="storageMeter"></div>
+        <div class="rightSidebar">
+          <div class="storageMeter">Meter</div>
+          <div class="selectedDetails">folder or file details go here along with CRUD btns</div>
+        </div>
+        
       </div>
     </div>
   </body>
