@@ -14,7 +14,7 @@
     <div class="container">
       <div class="top">
         <form
-          action="/dashboard/uploads"
+          action="/dashboard/newFile"
           method="post"
           id="uploadForm"
           enctype="multipart/form-data"
@@ -41,6 +41,13 @@
             <div class="name">Root</div>
             <%- include('partials/folderOptions') %>
           </div>
+          <template id="folderRowTemplate">
+            <div class="folder" data-id="">
+              <div class="name"></div>
+              <%- include('partials/folderOptions') %>
+            </div>
+          </template>
+          
 
           <% if (locals.currentFolders && currentFolders.length) { %>
             <% currentFolders.forEach((folder) => { %>
@@ -49,7 +56,11 @@
                 <%- include('partials/folderOptions') %>
               </div>
             <% })} %>
-              
+            <div class="newFolderContainer">
+              <form action="/dashboard/newEmptyFolder" id="newFolderForm">
+              <input type="text" id="newFolderInput" name="newFolder" placeholder="enter folder name" required>
+            </form>
+            </div>
           <button id="addFolderBtn">+</button>
         </div>
         <div class="fileExplorer">
@@ -60,7 +71,15 @@
             <div>|</div>
             <div class="dateAdded"> date added</div>
           </div>
-
+          <template id="fileRowTemplate">
+            <a class="fileRow" download>
+              <div class="name"></div>
+              <div>|</div>
+              <div class="size"></div>
+              <div>|</div>
+              <div class="dateAdded"></div>
+            </a>
+          </template>
           <% if (locals.currentFolderContent && currentFolderContent.length) { %>
             <% currentFolderContent.forEach((file) => { %>
               <a

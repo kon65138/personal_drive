@@ -3,7 +3,8 @@ const {
   findFolderWithContents,
   createFile,
 } = require('../db/queries');
-const { filePath, removeFile, removePath } = require('../lib/storage');
+const { formatBytes, formatDate } = require('../lib/format');
+const { filePath, removePath } = require('../lib/storage');
 
 async function dashboardGet(req, res, next) {
   const folder = await findFolderWithContents(
@@ -43,7 +44,12 @@ async function dashboardUpload(req, res, next) {
       folderId: req.user.rootFolderId, // or a folder id from the request
     });
 
-    res.json({ id: file.id, name: file.name, size: Number(file.size) });
+    res.json({
+      id: file.id,
+      name: file.name,
+      size: formatBytes(file.size),
+      createdAt: formatDate(file.createdAt),
+    });
   } catch (err) {
     // multer wrote the file to disk before this handler ran, so a failed insert
     // would strand it on the volume with nothing pointing at it
@@ -52,4 +58,11 @@ async function dashboardUpload(req, res, next) {
   }
 }
 
-module.exports = { dashboardGet, dashboardUpload, dashboardDownload };
+async function dashboardNewEmptyFolder(req, res, next) {}
+
+module.exports = {
+  dashboardGet,
+  dashboardUpload,
+  dashboardDownload,
+  dashboardNewEmptyFolder,
+};

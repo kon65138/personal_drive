@@ -4,6 +4,10 @@ function createFile(data) {
   return prisma.file.create({ data });
 }
 
+function createFolder(data) {
+  return prisma.folder.create({ data });
+}
+
 function findFileForOwner(id, ownerId) {
   return prisma.file.findFirst({ where: { id, ownerId } });
 }
@@ -38,4 +42,5 @@ module.exports = {
   listFolderContents,
   listFolders,
   findFolderWithContents,
+  createFolder,
 };

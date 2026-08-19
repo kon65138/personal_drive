@@ -20,10 +20,16 @@ dashboardRouter.get(
 );
 
 dashboardRouter.post(
-  '/uploads',
+  '/newFile',
   isAuth,
   upload.single('file'),
   dashboardController.dashboardUpload,
+);
+
+dashboardRouter.post(
+  '/newEmptyFolder',
+  isAuth,
+  dashboardController.dashboardNewEmptyFolder,
 );
 
 module.exports = dashboardRouter;
