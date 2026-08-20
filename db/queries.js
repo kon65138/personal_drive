@@ -26,6 +26,12 @@ function listFolders(parentId, ownerId) {
   });
 }
 
+// ownership is part of the query so there is no callable path that returns
+// another user's folder
+function findFolderForOwner(id, ownerId) {
+  return prisma.folder.findFirst({ where: { id, ownerId } });
+}
+
 function findFolderWithContents(id, ownerId) {
   return prisma.folder.findFirst({
     where: { id, ownerId },
@@ -41,6 +47,7 @@ module.exports = {
   findFileForOwner,
   listFolderContents,
   listFolders,
+  findFolderForOwner,
   findFolderWithContents,
   createFolder,
 };

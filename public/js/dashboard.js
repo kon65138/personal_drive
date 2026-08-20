@@ -6,7 +6,7 @@ const addFolderBtn = document.getElementById('addFolderBtn');
 const newFolderFormCont = document.querySelector('.newFolderContainer');
 const newFolderForm = document.getElementById('newFolderForm');
 const folderRowTemplate = document.getElementById('folderRowTemplate');
-const folderBar = document.querySelector('.folderBar');
+const newFolderInput = document.getElementById('newFolderInput');
 
 function addFileRow(file) {
   const row = rowTemplate.content.firstElementChild.cloneNode(true);
@@ -24,11 +24,15 @@ function addFileRow(file) {
 function addfolderRow(folder) {
   const row = folderRowTemplate.content.firstElementChild.cloneNode(true);
 
-  row.href = `/dashboard/folders/${encodeURIComponent(folder.id)}`;
   row.dataset.id = folder.id;
-  row.querySelector('.name').textContent = folder.name;
 
-  folderBar.append(row);
+  const link = row.querySelector('.name');
+  link.href = `/dashboard/folders/${encodeURIComponent(folder.id)}`;
+  link.textContent = folder.name;
+
+  // the form and the + button are also children of .folderBar, so appending
+  // would drop the row underneath them
+  newFolderFormCont.before(row);
 }
 
 form.addEventListener('submit', async (event) => {
@@ -56,24 +60,29 @@ input.addEventListener('change', () => {
 newFolderForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
+  // URLSearchParams sends application/x-www-form-urlencoded, which
+  // express.urlencoded parses — FormData would send multipart, which only
+  // multer understands and this route has none
   const response = await fetch(newFolderForm.action, {
     method: 'POST',
-    body: new FormData(newFolderForm),
+    body: new URLSearchParams(new FormData(newFolderForm)),
   });
 
   if (!response.ok) {
-    console.error('Upload failed', response.status);
+    console.error('Creating folder failed', response.status);
     newFolderForm.reset();
     return;
   }
 
   addfolderRow(await response.json());
+  newFolderFormCont.style.display = 'none';
   newFolderForm.reset();
 });
 
 addFolderBtn.addEventListener('click', () => {
   if (getComputedStyle(newFolderFormCont).display === 'none') {
     newFolderFormCont.style.display = 'flex';
+    newFolderInput.focus();
   } else {
     newFolderForm.requestSubmit();
     newFolderFormCont.style.display = 'none';

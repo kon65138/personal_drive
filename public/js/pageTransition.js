@@ -30,6 +30,8 @@
     if (!link) return;
     if (link.hasAttribute('download')) return;
     if (link.target && link.target !== '_self') return;
+    // opted out — navigation inside the drive should feel immediate
+    if (link.closest('[data-no-transition]')) return;
 
     const url = new URL(link.href, window.location.href);
     if (url.origin !== window.location.origin) return;

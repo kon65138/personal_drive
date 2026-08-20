@@ -86,6 +86,7 @@ body {
   display: flex;
   flex-direction: column;
   flex: 0.3;
+  min-width: 0;
 }
 
 .folderBar h2 {
@@ -107,17 +108,33 @@ body {
   padding: 0.1rem 0.5rem 0.1rem 0.5rem;
 }
 
+/* the name is a link now, so stretch it to make the whole row a hit target */
+.folder .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .newFolderContainer {
   display: none;
   justify-content: center;
   align-items: center;
   border-bottom: 1px solid var(--border);
   margin: 0;
+  width: 100%;
   font-size: 1.3rem;
 }
 
+#newFolderForm {
+  width: 100%;
+  min-width: 0;
+}
+
 #newFolderInput {
-  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.1rem 0.5rem;
 }
 
 .folder:hover,

@@ -179,6 +179,13 @@ body.leaving > * {
   transition: opacity 100ms ease-in;
 }
 
+/* pages that navigate within themselves opt out of the arrival fade;
+   `data-no-transition` only covers leaving, since this page's markup is
+   already gone by the time the next one loads */
+body.instant > * {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   body > *,
   body.leaving > * {

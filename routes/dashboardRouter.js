@@ -14,6 +14,12 @@ const dashboardRouter = Router();
 dashboardRouter.get('/', isAuth, dashboardController.dashboardGet);
 
 dashboardRouter.get(
+  '/folders/:id',
+  isAuth,
+  dashboardController.dashboardFolderGet,
+);
+
+dashboardRouter.get(
   '/files/:id',
   isAuth,
   dashboardController.dashboardDownload,

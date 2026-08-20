@@ -9,7 +9,9 @@
     <script src="/js/dashboard.js" defer></script>
     <title>Personal Drive</title>
   </head>
-  <body>
+  <!-- browsing between folders reloads this page; fading in each time would
+       make navigation feel slow -->
+  <body class="instant">
     <%- include('partials/title') %>
     <div class="container">
       <div class="top">
@@ -20,6 +22,7 @@
           enctype="multipart/form-data"
           data-no-transition
         >
+          <input type="hidden" name="parentId" value="<%= locals.currentFolder ? currentFolder.id : '' %>" />
           <input type="file" name="file" id="upload" class="visuallyHidden" />
           <label for="upload" class="uploadButton">Upload file</label>
         </form>
@@ -33,31 +36,40 @@
         </div>
         <button id="settings">settings</button>
       </div>
-      <div class="bottom">
+      <!-- browsing and CRUD inside the drive stay instant; only page-level
+           links (the title, login, etc.) get the fade -->
+      <div class="bottom" data-no-transition>
         <div class="folderBar">
           <h2 class="folderTitle">folders</h2>
 
           <div id="rootFolder" class="folder">
-            <div class="name">Root</div>
+            <a class="name" href="/dashboard">Root</a>
             <%- include('partials/folderOptions') %>
           </div>
+
+          <% if (locals.currentFolder && currentFolder.parentId) { %>
+            <div class="folder">
+              <a class="name" href="/dashboard/folders/<%= currentFolder.parentId %>">.. previous folder</a>
+            </div>
+          <% } %>
+
           <template id="folderRowTemplate">
             <div class="folder" data-id="">
-              <div class="name"></div>
+              <a class="name"></a>
               <%- include('partials/folderOptions') %>
             </div>
           </template>
-          
 
           <% if (locals.currentFolders && currentFolders.length) { %>
             <% currentFolders.forEach((folder) => { %>
               <div class="folder" data-id="<%= folder.id %>">
-                <div class="name"><%= folder.name %></div>
+                <a class="name" href="/dashboard/folders/<%= folder.id %>"><%= folder.name %></a>
                 <%- include('partials/folderOptions') %>
               </div>
             <% })} %>
             <div class="newFolderContainer">
-              <form action="/dashboard/newEmptyFolder" id="newFolderForm">
+              <form action="/dashboard/newEmptyFolder" method="post" id="newFolderForm">
+              <input type="hidden" name="parentId" value="<%= locals.currentFolder ? currentFolder.id : '' %>">
               <input type="text" id="newFolderInput" name="newFolder" placeholder="enter folder name" required>
             </form>
             </div>
