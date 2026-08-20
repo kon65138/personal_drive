@@ -88,3 +88,45 @@ addFolderBtn.addEventListener('click', () => {
     newFolderFormCont.style.display = 'none';
   }
 });
+
+function clearSelection() {
+  document
+    .querySelector('.folder.selected, .fileRow.selected')
+    ?.classList.remove('selected');
+}
+
+// clicking away discards whatever was typed rather than creating the folder
+function closeNewFolderForm() {
+  if (getComputedStyle(newFolderFormCont).display === 'none') return;
+  newFolderFormCont.style.display = 'none';
+  newFolderForm.reset();
+}
+
+document.addEventListener('click', (event) => {
+  // the + button runs its own toggle, so closing here would immediately undo it
+  if (!event.target.closest('.newFolderContainer, #addFolderBtn')) {
+    closeNewFolderForm();
+  }
+
+  // controls that act on the current selection must not clear it first
+  if (event.target.closest('.selectedDetails')) return;
+
+  const row = event.target.closest('.folder:not(.navUp), .fileRow');
+
+  if (!row) {
+    clearSelection();
+    return;
+  }
+
+  if (row.classList.contains('selected')) return;
+
+  event.preventDefault();
+  clearSelection();
+  row.classList.add('selected');
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  closeNewFolderForm();
+  clearSelection();
+});

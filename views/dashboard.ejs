@@ -9,8 +9,6 @@
     <script src="/js/dashboard.js" defer></script>
     <title>Personal Drive</title>
   </head>
-  <!-- browsing between folders reloads this page; fading in each time would
-       make navigation feel slow -->
   <body class="instant">
     <%- include('partials/title') %>
     <div class="container">
@@ -36,19 +34,16 @@
         </div>
         <button id="settings">settings</button>
       </div>
-      <!-- browsing and CRUD inside the drive stay instant; only page-level
-           links (the title, login, etc.) get the fade -->
       <div class="bottom" data-no-transition>
         <div class="folderBar">
           <h2 class="folderTitle">folders</h2>
 
           <div id="rootFolder" class="folder">
             <a class="name" href="/dashboard">Root</a>
-            <%- include('partials/folderOptions') %>
           </div>
 
           <% if (locals.currentFolder && currentFolder.parentId) { %>
-            <div class="folder">
+            <div class="folder navUp">
               <a class="name" href="/dashboard/folders/<%= currentFolder.parentId %>">.. previous folder</a>
             </div>
           <% } %>
@@ -56,7 +51,6 @@
           <template id="folderRowTemplate">
             <div class="folder" data-id="">
               <a class="name"></a>
-              <%- include('partials/folderOptions') %>
             </div>
           </template>
 
@@ -64,7 +58,6 @@
             <% currentFolders.forEach((folder) => { %>
               <div class="folder" data-id="<%= folder.id %>">
                 <a class="name" href="/dashboard/folders/<%= folder.id %>"><%= folder.name %></a>
-                <%- include('partials/folderOptions') %>
               </div>
             <% })} %>
             <div class="newFolderContainer">

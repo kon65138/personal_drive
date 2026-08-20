@@ -105,15 +105,21 @@ body {
   width: 100%;
   margin: 0;
   font-size: 1.3rem;
-  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
 }
 
-/* the name is a link now, so stretch it to make the whole row a hit target */
+/* the padding lives on the link, not the row, so the anchor covers every
+   pixel — a click anywhere in the row has a link to follow */
 .folder .name {
   flex: 1;
+  padding: 0.1rem 0.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.folder,
+.fileRow {
+  user-select: none;
 }
 
 .newFolderContainer {
@@ -138,6 +144,7 @@ body {
 }
 
 .folder:hover,
+.selected,
 #addFolderBtn:hover {
   background: var(--bg);
 }
