@@ -52,6 +52,22 @@ function findFolderSummary(id, ownerId) {
   });
 }
 
+// A folder's size is every file beneath it at any depth. Prisma can't express
+// recursion, so the subtree walk and the sum happen in one round trip.
+async function folderSize(id, ownerId) {
+  const [row] = await prisma.$queryRaw`
+    WITH RECURSIVE tree AS (
+      SELECT id FROM "Folder" WHERE id = ${id} AND "ownerId" = ${ownerId}
+      UNION
+      SELECT f.id FROM "Folder" f JOIN tree t ON f."parentId" = t.id
+    )
+    SELECT COALESCE(SUM(fi.size), 0)::bigint AS size,
+           COUNT(fi.id)::int              AS files
+    FROM tree t LEFT JOIN "File" fi ON fi."folderId" = t.id
+  `;
+  return row;
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -61,4 +77,5 @@ module.exports = {
   findFolderWithContents,
   createFolder,
   findFolderSummary,
+  folderSize,
 };

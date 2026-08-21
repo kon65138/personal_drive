@@ -102,6 +102,8 @@ function clearSelection() {
   document
     .querySelector('.folder.selected, .fileRow.selected')
     ?.classList.remove('selected');
+  // an in-flight size request must not repopulate a panel nothing is selected in
+  delete selectedDetails.dataset.showing;
 }
 
 // clicking away discards whatever was typed rather than creating the folder
@@ -141,11 +143,16 @@ document.addEventListener('click', (event) => {
   updateDetails(row);
 });
 
-function updateDetails(row) {
-  const isFolder = row.closest('.folderBar') ? true : false;
+async function updateDetails(row) {
+  const isFolder = Boolean(row.closest('.folderBar'));
+
+  // stamp what the panel is currently showing, so a size response that arrives
+  // after the user has moved on can tell it is stale and bow out
+  const token = isFolder ? `folder:${row.dataset.id}` : `file:${row.dataset.id}`;
+  selectedDetails.dataset.showing = token;
+
   detailsName.textContent = row.children[0].textContent;
   type.textContent = isFolder ? 'Folder' : row.dataset.type;
-  detailsSize.textContent = isFolder ? '--' : row.children[2].textContent;
   updated.textContent = row.dataset.updated;
   added.textContent = isFolder
     ? row.dataset.added
@@ -154,6 +161,24 @@ function updateDetails(row) {
   items[1].textContent = isFolder ? row.dataset.items : '';
   items[0].style.display = isFolder ? 'block' : 'none';
   items[1].style.display = isFolder ? 'block' : 'none';
+
+  if (!isFolder) {
+    detailsSize.textContent = row.children[2].textContent;
+    return;
+  }
+
+  detailsSize.textContent = '…';
+
+  let size = '--';
+  try {
+    const response = await fetch(`/dashboard/folders/${row.dataset.id}/size`);
+    if (response.ok) ({ size } = await response.json());
+  } catch {
+    // network failure falls through to '--'
+  }
+
+  if (selectedDetails.dataset.showing !== token) return;
+  detailsSize.textContent = size;
 }
 
 document.getElementById('rootFolder').click();

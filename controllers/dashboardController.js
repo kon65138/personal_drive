@@ -5,6 +5,7 @@ const {
   createFile,
   createFolder,
   findFolderSummary,
+  folderSize,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -128,10 +129,22 @@ async function dashboardNewEmptyFolder(req, res, next) {
   }
 }
 
+async function dashboardFolderSize(req, res, next) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const folder = await findFolderForOwner(id, req.user.id);
+  if (!folder) return res.sendStatus(404);
+
+  const { size, files } = await folderSize(id, req.user.id);
+  res.json({ size: formatBytes(size), files });
+}
+
 module.exports = {
   dashboardGet,
   dashboardFolderGet,
   dashboardUpload,
   dashboardDownload,
   dashboardNewEmptyFolder,
+  dashboardFolderSize,
 };

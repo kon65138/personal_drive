@@ -32,6 +32,12 @@ dashboardRouter.post(
   dashboardController.dashboardUpload,
 );
 
+dashboardRouter.get(
+  '/folders/:id/size',
+  isAuth,
+  dashboardController.dashboardFolderSize,
+);
+
 dashboardRouter.post(
   '/newEmptyFolder',
   isAuth,
