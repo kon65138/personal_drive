@@ -7,6 +7,15 @@ const newFolderFormCont = document.querySelector('.newFolderContainer');
 const newFolderForm = document.getElementById('newFolderForm');
 const folderRowTemplate = document.getElementById('folderRowTemplate');
 const newFolderInput = document.getElementById('newFolderInput');
+const selectedDetails = document.querySelector('.selectedDetails');
+const detailsName = selectedDetails.querySelector('.name');
+const type = selectedDetails.querySelector('.type');
+const detailsSize = selectedDetails.querySelector('.size');
+const updated = selectedDetails.querySelector('.updatedAt');
+const added = selectedDetails.querySelector('.dateAdded');
+const items = selectedDetails.querySelectorAll('.items');
+const deleteBtn = document.getElementById('delete');
+const renameBtn = document.getElementById('rename');
 
 function addFileRow(file) {
   const row = rowTemplate.content.firstElementChild.cloneNode(true);
@@ -102,6 +111,12 @@ function closeNewFolderForm() {
   newFolderForm.reset();
 }
 
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  closeNewFolderForm();
+  clearSelection();
+});
+
 document.addEventListener('click', (event) => {
   // the + button runs its own toggle, so closing here would immediately undo it
   if (!event.target.closest('.newFolderContainer, #addFolderBtn')) {
@@ -123,10 +138,22 @@ document.addEventListener('click', (event) => {
   event.preventDefault();
   clearSelection();
   row.classList.add('selected');
+  updateDetails(row);
 });
 
-document.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape') return;
-  closeNewFolderForm();
-  clearSelection();
-});
+function updateDetails(row) {
+  const isFolder = row.closest('.folderBar') ? true : false;
+  detailsName.textContent = row.children[0].textContent;
+  type.textContent = isFolder ? 'Folder' : row.dataset.type;
+  detailsSize.textContent = isFolder ? '--' : row.children[2].textContent;
+  updated.textContent = row.dataset.updated;
+  added.textContent = isFolder
+    ? row.dataset.added
+    : row.children[4].textContent;
+
+  items[1].textContent = isFolder ? row.dataset.items : '';
+  items[0].style.display = isFolder ? 'block' : 'none';
+  items[1].style.display = isFolder ? 'block' : 'none';
+}
+
+document.getElementById('rootFolder').click();

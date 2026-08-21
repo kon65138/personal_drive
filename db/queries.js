@@ -36,9 +36,19 @@ function findFolderWithContents(id, ownerId) {
   return prisma.folder.findFirst({
     where: { id, ownerId },
     include: {
-      children: { orderBy: { name: 'asc' } },
+      children: {
+        orderBy: { name: 'asc' },
+        include: { _count: { select: { children: true, files: true } } },
+      },
       files: { orderBy: { name: 'asc' } },
     },
+  });
+}
+
+function findFolderSummary(id, ownerId) {
+  return prisma.folder.findFirst({
+    where: { id, ownerId },
+    include: { _count: { select: { children: true, files: true } } },
   });
 }
 
@@ -50,4 +60,5 @@ module.exports = {
   findFolderForOwner,
   findFolderWithContents,
   createFolder,
+  findFolderSummary,
 };

@@ -38,9 +38,17 @@
         <div class="folderBar">
           <h2 class="folderTitle">folders</h2>
 
-          <div id="rootFolder" class="folder">
-            <a class="name" href="/dashboard">Root</a>
-          </div>
+          <div
+  id="rootFolder"
+  class="folder"
+  data-id="<%= rootFolder.id %>"
+  data-updated="<%= formatDate(rootFolder.updatedAt) %>"
+  data-added="<%= formatDate(rootFolder.createdAt) %>"
+  data-items="<%= rootFolder._count.children + rootFolder._count.files %>"
+>
+  <a class="name" href="/dashboard">Root</a>
+</div>
+
 
           <% if (locals.currentFolder && currentFolder.parentId) { %>
             <div class="folder navUp">
@@ -56,7 +64,7 @@
 
           <% if (locals.currentFolders && currentFolders.length) { %>
             <% currentFolders.forEach((folder) => { %>
-              <div class="folder" data-id="<%= folder.id %>">
+              <div class="folder" data-id="<%= folder.id %>" data-updated="<%= formatDate(folder.updatedAt) %>" data-added="<%= formatDate(folder.createdAt) %>" data-items="<%= folder._count.children + folder._count.files %>">
                 <a class="name" href="/dashboard/folders/<%= folder.id %>"><%= folder.name %></a>
               </div>
             <% })} %>
@@ -91,6 +99,8 @@
                 class="fileRow"
                 href="/dashboard/files/<%= file.id %>"
                 data-id="<%= file.id %>"
+                data-type="<%= file.mimeType %>"
+                data-updated="<%= formatDate(file.updatedAt) %>"
                 download
               >
                 <div class="name"><%= file.name %></div>
@@ -106,7 +116,26 @@
         </div>
         <div class="rightSidebar">
           <div class="storageMeter">Meter</div>
-          <div class="selectedDetails">folder or file details go here along with CRUD btns</div>
+          <div class="selectedDetails">
+            <div class="details">
+              <label>Name</label>
+              <div class="name"></div>
+              <label>Type</label>
+              <div class="type"></div>
+              <label>Size</label>
+              <div class="size"></div>
+              <label>Last Updated</label>
+              <div class="updatedAt"></div>
+              <label>Date Added</label>
+              <div class="dateAdded"></div>
+              <label class="items" style="display: none;">Items</label>
+              <div class="items" style="display: none;"></div>
+            </div>
+            <div class="buttons">
+              <button id="delete">Delete</button>
+              <button id="rename">Rename</button>
+            </div>
+          </div>
         </div>
         
       </div>

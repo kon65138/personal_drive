@@ -4,6 +4,7 @@ const {
   findFolderWithContents,
   createFile,
   createFolder,
+  findFolderSummary,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -26,13 +27,17 @@ async function resolveParentId(req) {
 
 // shared by the root view and the per-folder view so both stay in step
 async function renderFolder(req, res, folderId) {
-  const folder = await findFolderWithContents(folderId, req.user.id);
+  const [folder, rootFolder] = await Promise.all([
+    findFolderWithContents(folderId, req.user.id),
+    findFolderSummary(req.user.rootFolderId, req.user.id),
+  ]);
   if (!folder) return res.sendStatus(404);
 
   res.render('dashboard', {
     currentFolder: folder,
     currentFolders: folder.children,
     currentFolderContent: folder.files,
+    rootFolder,
   });
 }
 
