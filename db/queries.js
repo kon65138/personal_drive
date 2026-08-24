@@ -68,6 +68,20 @@ async function folderSize(id, ownerId) {
   return row;
 }
 
+function renameFolder(id, name) {
+  return prisma.folder.update({
+    where: { id: id },
+    data: { name: name },
+  });
+}
+
+function renameFile(id, name) {
+  return prisma.file.update({
+    where: { id: id },
+    data: { name: name },
+  });
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -78,4 +92,6 @@ module.exports = {
   createFolder,
   findFolderSummary,
   folderSize,
+  renameFolder,
+  renameFile,
 };

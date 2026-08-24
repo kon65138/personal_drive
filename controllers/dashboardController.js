@@ -6,6 +6,8 @@ const {
   createFolder,
   findFolderSummary,
   folderSize,
+  renameFile,
+  renameFolder,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -140,6 +142,69 @@ async function dashboardFolderSize(req, res, next) {
   res.json({ size: formatBytes(size), files });
 }
 
+async function dashboardRenameFile(req, res, next) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const name = (req.body.name || '').trim();
+  if (!name) return res.status(400).json({ error: 'Name is required' });
+
+  const file = await findFileForOwner(id, req.user.id);
+  if (!file) return res.sendStatus(404);
+
+  try {
+    const updated = await renameFile(id, name);
+    res.json({ id: updated.id, name: updated.name });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ error: 'That name is already taken here' });
+    }
+    next(err);
+  }
+}
+
+async function dashboardRenameFolder(req, res, next) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const name = (req.body.name || '').trim();
+  if (!name) return res.status(400).json({ error: 'Name is required' });
+
+  const folder = await findFolderForOwner(id, req.user.id);
+  if (!folder) return res.sendStatus(404);
+
+  try {
+    const updated = await renameFolder(id, name);
+    res.json({ id: updated.id, name: updated.name });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ error: 'That name is already taken here' });
+    }
+    next(err);
+  }
+}
+
+async function dashboardDeleteFolder(req, res, next) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const name = (req.body.name || '').trim();
+  if (!name) return res.status(400).json({ error: 'Name is required' });
+
+  const folder = await findFolderForOwner(id, req.user.id);
+  if (!folder) return res.sendStatus(404);
+
+  try {
+    const updated = await renameFolder(id, name);
+    res.json({ id: updated.id, name: updated.name });
+  } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ error: 'That name is already taken here' });
+    }
+    next(err);
+  }
+}
+
 module.exports = {
   dashboardGet,
   dashboardFolderGet,
@@ -147,4 +212,7 @@ module.exports = {
   dashboardDownload,
   dashboardNewEmptyFolder,
   dashboardFolderSize,
+  dashboardRenameFolder,
+  dashboardRenameFile,
+  dashboardDeleteFolder,
 };

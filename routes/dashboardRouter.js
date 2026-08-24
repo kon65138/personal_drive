@@ -25,17 +25,41 @@ dashboardRouter.get(
   dashboardController.dashboardDownload,
 );
 
+dashboardRouter.get(
+  '/folders/:id/size',
+  isAuth,
+  dashboardController.dashboardFolderSize,
+);
+
+dashboardRouter.patch(
+  '/files/:id',
+  isAuth,
+  dashboardController.dashboardRenameFile(),
+);
+
+dashboardRouter.delete(
+  '/files/:id',
+  isAuth,
+  dashboardController.dashboardDeleteFile(),
+);
+
+dashboardRouter.patch(
+  '/folders/:id',
+  isAuth,
+  dashboardController.dashboardRenameFolder(),
+);
+
+dashboardRouter.delete(
+  '/folders/:id',
+  isAuth,
+  dashboardController.dashboardDeleteFolder(),
+);
+
 dashboardRouter.post(
   '/newFile',
   isAuth,
   upload.single('file'),
   dashboardController.dashboardUpload,
-);
-
-dashboardRouter.get(
-  '/folders/:id/size',
-  isAuth,
-  dashboardController.dashboardFolderSize,
 );
 
 dashboardRouter.post(
