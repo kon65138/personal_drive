@@ -12,11 +12,13 @@
 
   /* interactive */
   --accent: #0969da;
+  --accent-faded: #096bda83;
   --accent-hover: #0550ae;
   --accent-text: #ffffff;
 
   /* status */
   --danger: #cf222e;
+  --danger-faded: #cf222d81;
   --success: #1a7f37;
 }
 

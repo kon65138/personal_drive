@@ -145,6 +145,13 @@ document.addEventListener('click', (event) => {
 
 async function updateDetails(row) {
   const isFolder = Boolean(row.closest('.folderBar'));
+  if (row.id === 'rootFolder') {
+    deleteBtn.classList.add('faded');
+    renameBtn.classList.add('faded');
+  } else {
+    deleteBtn.classList.remove('faded');
+    renameBtn.classList.remove('faded');
+  }
 
   // stamp what the panel is currently showing, so a size response that arrives
   // after the user has moved on can tell it is stale and bow out
@@ -216,6 +223,7 @@ function resetDetails() {
 }
 
 deleteBtn.addEventListener('click', async () => {
+  if (deleteBtn.classList.contains('faded')) return;
   const row = selectedRow();
   if (!row) return;
 
@@ -232,25 +240,94 @@ deleteBtn.addEventListener('click', async () => {
   resetDetails();
 });
 
-renameBtn.addEventListener('click', async () => {
+// only one row can be in edit mode at a time
+let activeRename = null;
+
+renameBtn.addEventListener('click', () => {
+  if (renameBtn.classList.contains('faded')) return;
+
   const row = selectedRow();
   if (!row) return;
 
-  const nameCell = row.querySelector('.name');
-  const current = nameCell.textContent;
-  const name = window.prompt('New name', current)?.trim();
-  if (!name || name === current) return;
+  // reopening on another row abandons the first edit
+  activeRename?.();
 
+  const { form, input, restore, original } = startRename(row);
   const { url } = endpointFor(row);
-  const response = await fetch(url, {
-    method: 'PATCH',
-    body: new URLSearchParams({ name }),
-  });
-  if (!response.ok) return alert(await failureMessage(response));
 
-  const { name: saved } = await response.json();
-  nameCell.textContent = saved;
-  updateDetails(row);
+  // `settled` stops blur and Escape firing after a submit has taken over
+  let settled = false;
+  function finish(text) {
+    if (settled) return;
+    settled = true;
+    activeRename = null;
+    restore(text);
+  }
+
+  activeRename = () => finish(original);
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') finish(original);
+  });
+  input.addEventListener('blur', () => finish(original));
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (settled) return;
+
+    const name = input.value.trim();
+    if (!name || name === original) return finish(original);
+
+    // claim the edit before awaiting, so a blur mid-request cannot roll it back
+    settled = true;
+
+    const response = await fetch(url, {
+      method: 'PATCH',
+      body: new URLSearchParams({ name }),
+    });
+
+    if (!response.ok) {
+      alert(await failureMessage(response));
+      settled = false;
+      return finish(original);
+    }
+
+    const { name: saved } = await response.json();
+    settled = false;
+    finish(saved);
+    updateDetails(row);
+  });
 });
+
+// Swaps the row's .name cell for an input. No action/method: submission is
+// intercepted and sent as a PATCH via endpointFor, so the form never navigates.
+function startRename(row) {
+  const cell = row.querySelector('.name');
+  const original = cell.textContent.trim();
+
+  const form = document.createElement('form');
+  form.className = 'renameForm';
+  form.id = `${row.classList.contains('folder') ? 'folder' : 'fileRow'}${row.dataset.id}renameForm`;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.name = 'name';
+  input.required = true;
+  input.value = original;
+  form.append(input);
+
+  cell.replaceWith(form);
+  input.focus();
+  input.select();
+
+  // putting the original node back preserves its classes, href and listeners —
+  // nothing has to be rebuilt
+  function restore(text = original) {
+    cell.textContent = text;
+    form.replaceWith(cell);
+  }
+
+  return { form, input, restore, original };
+}
 
 document.getElementById('rootFolder').click();

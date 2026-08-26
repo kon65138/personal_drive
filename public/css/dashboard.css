@@ -128,6 +128,38 @@ body {
   user-select: none;
 }
 
+/* `display: contents` means the form generates no box of its own, so the input
+   becomes a direct flex item of the row — occupying the replaced .name cell's
+   slot exactly, rather than nesting a second box inside it */
+.renameForm {
+  display: contents;
+}
+
+.renameForm input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  /* rows set user-select: none, which would otherwise be inherited and make
+     the field's own text unselectable */
+  user-select: text;
+}
+
+/* matches the padding on .folder .name; .fileRow .name has none */
+.folder .renameForm input {
+  padding: 0.1rem 0.5rem;
+}
+
+/* an input's intrinsic line box differs from a text node's, which is what
+   changed the row height — pinning both to the same value removes the jump */
+.folder .name,
+.fileRow .name,
+.renameForm input {
+  line-height: 1.4;
+}
+
 .newFolderContainer {
   display: none;
   justify-content: center;
@@ -296,4 +328,17 @@ body {
 
 #delete {
   background: var(--danger);
+}
+
+#delete.faded {
+  background: var(--danger-faded);
+}
+
+#rename.faded {
+  background: var(--accent-faded);
+}
+
+#delete.faded:hover,
+#rename.faded:hover {
+  cursor: not-allowed;
 }
