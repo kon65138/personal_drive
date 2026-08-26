@@ -82,6 +82,29 @@ function renameFile(id, name) {
   });
 }
 
+// The cascade removes descendant rows, taking their storageKeys with them, so
+// the keys have to be collected while the tree still exists.
+function subtreeStorageKeys(id, ownerId) {
+  return prisma.$queryRaw`
+    WITH RECURSIVE tree AS (
+      SELECT id FROM "Folder" WHERE id = ${id} AND "ownerId" = ${ownerId}
+      UNION
+      SELECT f.id FROM "Folder" f JOIN tree t ON f."parentId" = t.id
+    )
+    SELECT fi."storageKey" FROM tree t JOIN "File" fi ON fi."folderId" = t.id
+  `;
+}
+
+// deleteMany rather than delete: it accepts a non-unique where, so ownership
+// is enforced in the query instead of by the caller. count 0 means "not yours".
+function deleteFolder(id, ownerId) {
+  return prisma.folder.deleteMany({ where: { id, ownerId } });
+}
+
+function deleteFile(id, ownerId) {
+  return prisma.file.deleteMany({ where: { id, ownerId } });
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -94,4 +117,7 @@ module.exports = {
   folderSize,
   renameFolder,
   renameFile,
+  subtreeStorageKeys,
+  deleteFolder,
+  deleteFile,
 };

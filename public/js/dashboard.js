@@ -148,7 +148,9 @@ async function updateDetails(row) {
 
   // stamp what the panel is currently showing, so a size response that arrives
   // after the user has moved on can tell it is stale and bow out
-  const token = isFolder ? `folder:${row.dataset.id}` : `file:${row.dataset.id}`;
+  const token = isFolder
+    ? `folder:${row.dataset.id}`
+    : `file:${row.dataset.id}`;
   selectedDetails.dataset.showing = token;
 
   detailsName.textContent = row.children[0].textContent;
@@ -180,5 +182,75 @@ async function updateDetails(row) {
   if (selectedDetails.dataset.showing !== token) return;
   detailsSize.textContent = size;
 }
+
+function selectedRow() {
+  return document.querySelector('.folder.selected, .fileRow.selected');
+}
+
+// the row's pane decides which of the two endpoint pairs applies
+function endpointFor(row) {
+  const isFolder = Boolean(row.closest('.folderBar'));
+  return {
+    isFolder,
+    url: `/dashboard/${isFolder ? 'folders' : 'files'}/${encodeURIComponent(row.dataset.id)}`,
+  };
+}
+
+async function failureMessage(response) {
+  try {
+    const body = await response.json();
+    if (body.error) return body.error;
+  } catch {
+    // non-JSON body — e.g. an expired session redirecting to /login
+  }
+  return `Request failed (${response.status})`;
+}
+
+function resetDetails() {
+  detailsName.textContent = '';
+  type.textContent = '';
+  detailsSize.textContent = '';
+  updated.textContent = '';
+  added.textContent = '';
+  items.forEach((el) => (el.style.display = 'none'));
+}
+
+deleteBtn.addEventListener('click', async () => {
+  const row = selectedRow();
+  if (!row) return;
+
+  const { url, isFolder } = endpointFor(row);
+  const name = row.querySelector('.name').textContent;
+
+  if (!confirm(`Delete ${isFolder ? 'folder' : 'file'} "${name}"?`)) return;
+
+  const response = await fetch(url, { method: 'DELETE' });
+  if (!response.ok) return alert(await failureMessage(response));
+
+  row.remove();
+  clearSelection();
+  resetDetails();
+});
+
+renameBtn.addEventListener('click', async () => {
+  const row = selectedRow();
+  if (!row) return;
+
+  const nameCell = row.querySelector('.name');
+  const current = nameCell.textContent;
+  const name = window.prompt('New name', current)?.trim();
+  if (!name || name === current) return;
+
+  const { url } = endpointFor(row);
+  const response = await fetch(url, {
+    method: 'PATCH',
+    body: new URLSearchParams({ name }),
+  });
+  if (!response.ok) return alert(await failureMessage(response));
+
+  const { name: saved } = await response.json();
+  nameCell.textContent = saved;
+  updateDetails(row);
+});
 
 document.getElementById('rootFolder').click();

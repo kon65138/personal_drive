@@ -34,25 +34,25 @@ dashboardRouter.get(
 dashboardRouter.patch(
   '/files/:id',
   isAuth,
-  dashboardController.dashboardRenameFile(),
+  dashboardController.dashboardRenameFile,
 );
 
 dashboardRouter.delete(
   '/files/:id',
   isAuth,
-  dashboardController.dashboardDeleteFile(),
+  dashboardController.dashboardDeleteFile,
 );
 
 dashboardRouter.patch(
   '/folders/:id',
   isAuth,
-  dashboardController.dashboardRenameFolder(),
+  dashboardController.dashboardRenameFolder,
 );
 
 dashboardRouter.delete(
   '/folders/:id',
   isAuth,
-  dashboardController.dashboardDeleteFolder(),
+  dashboardController.dashboardDeleteFolder,
 );
 
 dashboardRouter.post(

@@ -8,6 +8,9 @@ const {
   folderSize,
   renameFile,
   renameFolder,
+  subtreeStorageKeys,
+  deleteFolder,
+  deleteFile,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -167,6 +170,10 @@ async function dashboardRenameFolder(req, res, next) {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) return res.sendStatus(404);
 
+  if (id === req.user.rootFolderId) {
+    return res.status(400).json({ error: 'The root folder cannot be renamed' });
+  }
+
   const name = (req.body.name || '').trim();
   if (!name) return res.status(400).json({ error: 'Name is required' });
 
@@ -188,21 +195,40 @@ async function dashboardDeleteFolder(req, res, next) {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) return res.sendStatus(404);
 
-  const name = (req.body.name || '').trim();
-  if (!name) return res.status(400).json({ error: 'Name is required' });
+  if (id === req.user.rootFolderId) {
+    return res.status(400).json({ error: 'The root folder cannot be deleted' });
+  }
 
   const folder = await findFolderForOwner(id, req.user.id);
   if (!folder) return res.sendStatus(404);
 
-  try {
-    const updated = await renameFolder(id, name);
-    res.json({ id: updated.id, name: updated.name });
-  } catch (err) {
-    if (err.code === 'P2002') {
-      return res.status(409).json({ error: 'That name is already taken here' });
-    }
-    next(err);
-  }
+  const keys = await subtreeStorageKeys(id, req.user.id);
+
+  const { count } = await deleteFolder(id, req.user.id);
+  if (!count) return res.sendStatus(404);
+
+  // rows are gone; a failed unlink leaves a harmless orphan rather than a
+  // dangling reference, so cleanup failures shouldn't fail the request
+  await Promise.all(
+    keys.map(({ storageKey }) => removePath(filePath(storageKey))),
+  );
+
+  res.json({ deleted: id, parentId: folder.parentId });
+}
+
+async function dashboardDeleteFile(req, res, next) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const file = await findFileForOwner(id, req.user.id);
+  if (!file) return res.sendStatus(404);
+
+  const { count } = await deleteFile(id, req.user.id);
+  if (!count) return res.sendStatus(404);
+
+  await removePath(filePath(file.storageKey));
+
+  res.json({ id: file.id, name: file.name, folderId: file.folderId });
 }
 
 module.exports = {
@@ -215,4 +241,5 @@ module.exports = {
   dashboardRenameFolder,
   dashboardRenameFile,
   dashboardDeleteFolder,
+  dashboardDeleteFile,
 };
