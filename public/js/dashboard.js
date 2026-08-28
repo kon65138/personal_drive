@@ -305,6 +305,11 @@ function startRename(row) {
   const cell = row.querySelector('.name');
   const original = cell.textContent.trim();
 
+  // a .fileRow is itself the download link, so clicking into the input would
+  // start a download. an <a> with no href is inert, so stash it for the edit.
+  const href = row.getAttribute('href');
+  if (href !== null) row.removeAttribute('href');
+
   const form = document.createElement('form');
   form.className = 'renameForm';
   form.id = `${row.classList.contains('folder') ? 'folder' : 'fileRow'}${row.dataset.id}renameForm`;
@@ -325,6 +330,7 @@ function startRename(row) {
   function restore(text = original) {
     cell.textContent = text;
     form.replaceWith(cell);
+    if (href !== null) row.setAttribute('href', href);
   }
 
   return { form, input, restore, original };

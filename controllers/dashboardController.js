@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const {
   findFileForOwner,
   findFolderForOwner,
@@ -149,14 +150,22 @@ async function dashboardRenameFile(req, res, next) {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) return res.sendStatus(404);
 
-  const name = (req.body.name || '').trim();
-  if (!name) return res.status(400).json({ error: 'Name is required' });
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    // re-render the form with errors and the submitted values (keyed by
+    // form field name) so the user's input is preserved
+    return res.status(400).json({
+      errors: errors.array(),
+      values: req.body,
+    });
+  }
 
   const file = await findFileForOwner(id, req.user.id);
   if (!file) return res.sendStatus(404);
 
   try {
-    const updated = await renameFile(id, name);
+    const updated = await renameFile(id, req.body.name);
     res.json({ id: updated.id, name: updated.name });
   } catch (err) {
     if (err.code === 'P2002') {
@@ -174,14 +183,22 @@ async function dashboardRenameFolder(req, res, next) {
     return res.status(400).json({ error: 'The root folder cannot be renamed' });
   }
 
-  const name = (req.body.name || '').trim();
-  if (!name) return res.status(400).json({ error: 'Name is required' });
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    // re-render the form with errors and the submitted values (keyed by
+    // form field name) so the user's input is preserved
+    return res.status(400).json({
+      errors: errors.array(),
+      values: req.body,
+    });
+  }
 
   const folder = await findFolderForOwner(id, req.user.id);
   if (!folder) return res.sendStatus(404);
 
   try {
-    const updated = await renameFolder(id, name);
+    const updated = await renameFolder(id, req.body.name);
     res.json({ id: updated.id, name: updated.name });
   } catch (err) {
     if (err.code === 'P2002') {

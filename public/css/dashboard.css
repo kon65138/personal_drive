@@ -342,3 +342,8 @@ body {
 #rename.faded:hover {
   cursor: not-allowed;
 }
+
+.renameForm {
+  user-select: text;
+  line-height: 1.4;
+}

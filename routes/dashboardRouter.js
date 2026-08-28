@@ -3,6 +3,7 @@ const { UPLOAD_DIR } = require('../lib/storage');
 const dashboardController = require('../controllers/dashboardController');
 const { isAuth } = require('../middleware/authMiddleware');
 const multer = require('multer');
+const { nameValidator } = require('../middleware/renameValidator');
 
 const upload = multer({
   dest: UPLOAD_DIR,
@@ -34,6 +35,7 @@ dashboardRouter.get(
 dashboardRouter.patch(
   '/files/:id',
   isAuth,
+  nameValidator,
   dashboardController.dashboardRenameFile,
 );
 
@@ -46,6 +48,7 @@ dashboardRouter.delete(
 dashboardRouter.patch(
   '/folders/:id',
   isAuth,
+  nameValidator,
   dashboardController.dashboardRenameFolder,
 );
 
