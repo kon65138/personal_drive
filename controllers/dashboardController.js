@@ -45,6 +45,7 @@ async function renderFolder(req, res, folderId) {
     currentFolders: folder.children,
     currentFolderContent: folder.files,
     rootFolder,
+    storageSize: formatBytes(BigInt(process.env.VOLUME_SIZE)),
   });
 }
 
@@ -156,7 +157,7 @@ async function dashboardRenameFile(req, res, next) {
     // re-render the form with errors and the submitted values (keyed by
     // form field name) so the user's input is preserved
     return res.status(400).json({
-      errors: errors.array(),
+      error: errors.array()[0].msg,
       values: req.body,
     });
   }
@@ -189,7 +190,7 @@ async function dashboardRenameFolder(req, res, next) {
     // re-render the form with errors and the submitted values (keyed by
     // form field name) so the user's input is preserved
     return res.status(400).json({
-      errors: errors.array(),
+      error: errors.array()[0].msg,
       values: req.body,
     });
   }
@@ -248,6 +249,20 @@ async function dashboardDeleteFile(req, res, next) {
   res.json({ id: file.id, name: file.name, folderId: file.folderId });
 }
 
+async function dashboardStorage(req, res) {
+  const { size } = await folderSize(req.user.rootFolderId, req.user.id);
+  const capacity = BigInt(process.env.VOLUME_SIZE || 0);
+  const left = capacity > size ? capacity - size : 0n;
+
+  res.json({
+    used: formatBytes(size),
+    left: formatBytes(left),
+    percent:
+      Math.round((capacity > 0n ? Number(size) / Number(capacity) : 0) * 1000) /
+      10,
+  });
+}
+
 module.exports = {
   dashboardGet,
   dashboardFolderGet,
@@ -259,4 +274,5 @@ module.exports = {
   dashboardRenameFile,
   dashboardDeleteFolder,
   dashboardDeleteFile,
+  dashboardStorage,
 };

@@ -32,6 +32,12 @@ dashboardRouter.get(
   dashboardController.dashboardFolderSize,
 );
 
+dashboardRouter.get(
+  '/storageLeft',
+  isAuth,
+  dashboardController.dashboardStorageLeft,
+);
+
 dashboardRouter.patch(
   '/files/:id',
   isAuth,
