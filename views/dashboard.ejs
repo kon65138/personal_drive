@@ -115,7 +115,18 @@
           <% } %>
         </div>
         <div class="rightSidebar">
-          <div class="storageMeter">Meter</div>
+          <div class="storageMeter">
+            <div class="storageTitle">storage space</div>
+            <div class="meter">
+              <div class="meterUsed"></div>
+              <div class="meterLeft"></div>
+            </div>
+            <div class="storageStats">
+              <div class="totalSpace">Total Space: <%= locals.storageSize %></div>
+              <div class="storageUsed"></div>
+              <div class="storageLeft"></div>
+            </div>
+          </div>
           <div class="selectedDetails">
             <div class="details">
               <label>Name</label>

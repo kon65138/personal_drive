@@ -16,6 +16,11 @@ const added = selectedDetails.querySelector('.dateAdded');
 const items = selectedDetails.querySelectorAll('.items');
 const deleteBtn = document.getElementById('delete');
 const renameBtn = document.getElementById('rename');
+const storageUsed = document.querySelector('.storageUsed');
+const storageLeft = document.querySelector('.storageLeft');
+const rootFolder = document.getElementById('rootFolder');
+const meterUsed = document.querySelector('.meterUsed');
+const meterLeft = document.querySelector('.meterLeft');
 
 function addFileRow(file) {
   const row = rowTemplate.content.firstElementChild.cloneNode(true);
@@ -60,6 +65,7 @@ form.addEventListener('submit', async (event) => {
 
   addFileRow(await response.json());
   form.reset();
+  updateMeter();
 });
 
 input.addEventListener('change', () => {
@@ -238,6 +244,7 @@ deleteBtn.addEventListener('click', async () => {
   row.remove();
   clearSelection();
   resetDetails();
+  updateMeter();
 });
 
 // only one row can be in edit mode at a time
@@ -336,4 +343,22 @@ function startRename(row) {
   return { form, input, restore, original };
 }
 
-document.getElementById('rootFolder').click();
+async function updateMeter() {
+  let size = '';
+  let left = '';
+  let percent = '';
+  const response = await fetch(
+    `/dashboard/folders/${rootFolder.dataset.id}/size`,
+  );
+  if (response.ok) ({ size } = await response.json());
+  const response2 = await fetch(`/dashboard/storageLeft`);
+  if (response2.ok) ({ left, percent } = await response2.json());
+  storageUsed.textContent = `Storage used: ${size}`;
+  storageLeft.textContent = `Storage left: ${left}`;
+  meterUsed.style.flex = percent;
+  meterLeft.style.flex = 100 - percent;
+}
+
+updateMeter();
+
+rootFolder.click();

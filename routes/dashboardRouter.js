@@ -35,7 +35,7 @@ dashboardRouter.get(
 dashboardRouter.get(
   '/storageLeft',
   isAuth,
-  dashboardController.dashboardStorageLeft,
+  dashboardController.dashboardStorage,
 );
 
 dashboardRouter.patch(

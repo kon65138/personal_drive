@@ -347,3 +347,53 @@ body {
   user-select: text;
   line-height: 1.4;
 }
+
+.storageMeter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.5rem;
+}
+
+.storageTitle {
+  font-size: 1.2rem;
+  font-width: bold;
+  text-align: center;
+}
+
+.meter {
+  display: flex;
+  contain: content;
+  height: 2rem;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  padding: 0;
+  margin: 0;
+  background: var(--bg);
+}
+
+.meterUsed,
+.meterLeft {
+  padding: 0 0.5rem 0 0.5rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.meterUsed {
+  min-width: 0px;
+  flex: 0.7;
+  background-color: rgb(182, 88, 0);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.meterLeft {
+  flex: 0.3;
+}
+
+.storageStats {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
