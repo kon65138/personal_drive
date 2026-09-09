@@ -1,6 +1,6 @@
 const form = document.getElementById('uploadForm');
 const input = document.getElementById('upload');
-const explorer = document.querySelector('.fileExplorer');
+const explorer = document.querySelector('.fileList');
 const rowTemplate = document.getElementById('fileRowTemplate');
 const addFolderBtn = document.getElementById('addFolderBtn');
 const newFolderFormCont = document.querySelector('.newFolderContainer');
@@ -21,19 +21,8 @@ const storageLeft = document.querySelector('.storageLeft');
 const rootFolder = document.getElementById('rootFolder');
 const meterUsed = document.querySelector('.meterUsed');
 const meterLeft = document.querySelector('.meterLeft');
-
-function addFileRow(file) {
-  const row = rowTemplate.content.firstElementChild.cloneNode(true);
-
-  row.href = `/dashboard/files/${encodeURIComponent(file.id)}`;
-  row.dataset.id = file.id;
-  row.querySelector('.name').textContent = file.name;
-  row.querySelector('.size').textContent = file.size;
-  row.querySelector('.dateAdded').textContent = file.createdAt;
-
-  document.querySelector('.emptyExplorer')?.remove();
-  explorer.append(row);
-}
+const folderInput = document.getElementById('uploadFolder');
+const parentIdInput = form.querySelector('input[name="parentId"]');
 
 function addfolderRow(folder) {
   const row = folderRowTemplate.content.firstElementChild.cloneNode(true);
@@ -44,7 +33,7 @@ function addfolderRow(folder) {
   link.href = `/dashboard/folders/${encodeURIComponent(folder.id)}`;
   link.textContent = folder.name;
 
-  // the form and the + button are also children of .folderBar, so appending
+  // the form and the + button are also children of .folderList, so appending
   // would drop the row underneath them
   newFolderFormCont.before(row);
 }
@@ -63,13 +52,30 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  addFileRow(await response.json());
-  form.reset();
-  updateMeter();
+  location.reload();
 });
 
 input.addEventListener('change', () => {
   if (input.files.length) form.requestSubmit();
+});
+
+folderInput.addEventListener('change', async () => {
+  for (const file of folderInput.files) {
+    const body = new FormData();
+    body.append('parentId', parentIdInput.value);
+    body.append('relativePath', file.webkitRelativePath);
+    body.append('file', file);
+
+    const response = await fetch('/dashboard/newFile', {
+      method: 'POST',
+      body,
+    });
+    if (!response.ok) {
+      console.error('Upload failed', file.webkitRelativePath);
+    }
+  }
+
+  location.reload();
 });
 
 newFolderForm.addEventListener('submit', async (event) => {
@@ -89,9 +95,9 @@ newFolderForm.addEventListener('submit', async (event) => {
     return;
   }
 
-  addfolderRow(await response.json());
   newFolderFormCont.style.display = 'none';
   newFolderForm.reset();
+  location.reload();
 });
 
 addFolderBtn.addEventListener('click', () => {

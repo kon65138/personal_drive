@@ -23,6 +23,10 @@
           <input type="hidden" name="parentId" value="<%= locals.currentFolder ? currentFolder.id : '' %>" />
           <input type="file" name="file" id="upload" class="visuallyHidden" />
           <label for="upload" class="uploadButton">Upload file</label>
+
+          <input type="file" name="file" id="uploadFolder" class="visuallyHidden" webkitdirectory multiple />
+<label for="uploadFolder" class="uploadButton">Upload folder</label>
+
         </form>
 
         <div class="searchBar">
@@ -37,6 +41,7 @@
       <div class="bottom" data-no-transition>
         <div class="folderBar">
           <h2 class="folderTitle">folders</h2>
+          <div class="folderList">
 
           <div
   id="rootFolder"
@@ -75,6 +80,7 @@
             </form>
             </div>
           <button id="addFolderBtn">+</button>
+          </div>
         </div>
         <div class="fileExplorer">
           <div class="fileExplorerHeader">
@@ -84,6 +90,7 @@
             <div>|</div>
             <div class="dateAdded"> date added</div>
           </div>
+          <div class="fileList">
           <template id="fileRowTemplate">
             <a class="fileRow" download>
               <div class="name"></div>
@@ -113,10 +120,10 @@
           <% } else { %>
             <p class="emptyExplorer">This folder is empty</p>
           <% } %>
+          </div>
         </div>
         <div class="rightSidebar">
           <div class="storageMeter">
-            <div class="storageTitle">storage space</div>
             <div class="meter">
               <div class="meterUsed"></div>
               <div class="meterLeft"></div>

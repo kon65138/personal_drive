@@ -12,6 +12,7 @@ const {
   subtreeStorageKeys,
   deleteFolder,
   deleteFile,
+  ensureFolderPath,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -76,11 +77,22 @@ async function dashboardUpload(req, res, next) {
   }
 
   try {
-    const folderId = await resolveParentId(req);
+    let folderId = await resolveParentId(req);
     if (folderId === null) {
       await removePath(req.file.path);
       return res.status(404).json({ error: 'Folder not found' });
     }
+
+    // "photos/2024/img.jpg" -> ["photos", "2024"]; plain file uploads send no path
+    const relativePath = req.body.relativePath || '';
+    const segments = relativePath.split('/').slice(0, -1);
+
+    if (segments.some((s) => s === '' || s === '.' || s === '..')) {
+      await removePath(req.file.path);
+      return res.status(400).json({ error: 'Invalid folder path' });
+    }
+
+    folderId = await ensureFolderPath(req.user.id, folderId, segments);
 
     const file = await createFile({
       name: req.file.originalname,

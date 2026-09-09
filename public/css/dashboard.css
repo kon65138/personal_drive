@@ -39,12 +39,12 @@ body {
 #uploadForm {
   display: flex;
   align-self: stretch;
+  gap: 1rem;
 }
 
 #uploadForm label,
 #settings {
   display: flex;
-
   align-items: center;
   white-space: nowrap;
   padding: 0.5rem 1rem;
@@ -72,6 +72,10 @@ body {
 
 .bottom {
   flex: 1;
+  /* flex items default to min-height auto, which would let the row grow to
+     fit its panes; 0 holds it at the container's leftover height so the
+     lists inside can overflow and scroll */
+  min-height: 0;
   contain: content;
 }
 
@@ -81,6 +85,41 @@ body {
   flex-direction: column;
   border-radius: 20px;
   background: var(--surface);
+  /* the rounded corners clip the scrolling list inside */
+  overflow: hidden;
+}
+
+/* the heading / column header stay put while the rows scroll underneath.
+   flex 1 + min-height 0 lets the list shrink below its content so it can
+   overflow; auto keeps the scrollbar hidden until it actually does */
+.folderList,
+.fileList {
+  /* flex column so the rows (and the + button) stretch full width, as they
+     did when they were direct children of the pane */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* fallback for browsers without scrollbar-width/color (older Safari) */
+.folderList::-webkit-scrollbar,
+.fileList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.folderList::-webkit-scrollbar-thumb,
+.fileList::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.folderList::-webkit-scrollbar-thumb:hover,
+.fileList::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 /* the three panes below are sized purely by their flex ratios: basis 0 means
@@ -353,12 +392,6 @@ body {
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.5rem;
-}
-
-.storageTitle {
-  font-size: 1.2rem;
-  font-width: bold;
-  text-align: center;
 }
 
 .meter {

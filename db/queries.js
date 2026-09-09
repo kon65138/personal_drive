@@ -105,6 +105,27 @@ function deleteFile(id, ownerId) {
   return prisma.file.deleteMany({ where: { id, ownerId } });
 }
 
+async function ensureFolderPath(ownerId, parentId, segments) {
+  let currentId = parentId;
+
+  for (const name of segments) {
+    const existing = await prisma.folder.findFirst({
+      where: { ownerId, parentId: currentId, name },
+    });
+
+    if (existing) {
+      currentId = existing.id;
+    } else {
+      const created = await prisma.folder.create({
+        data: { name, ownerId, parentId: currentId },
+      });
+      currentId = created.id;
+    }
+  }
+
+  return currentId;
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -120,4 +141,5 @@ module.exports = {
   subtreeStorageKeys,
   deleteFolder,
   deleteFile,
+  ensureFolderPath,
 };
