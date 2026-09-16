@@ -4,10 +4,11 @@ const dashboardController = require('../controllers/dashboardController');
 const { isAuth } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const { nameValidator } = require('../middleware/renameValidator');
+const { checkQuota } = require('../middleware/checkSize');
 
 const upload = multer({
   dest: UPLOAD_DIR,
-  limits: { fileSize: 2 * 1024 * 1024 * 1024 },
+  limits: { fileSize: 1024 * 1024 * 1024 },
 });
 
 const dashboardRouter = Router();
@@ -67,6 +68,7 @@ dashboardRouter.delete(
 dashboardRouter.post(
   '/newFile',
   isAuth,
+  checkQuota,
   upload.single('file'),
   dashboardController.dashboardUpload,
 );
@@ -76,5 +78,18 @@ dashboardRouter.post(
   isAuth,
   dashboardController.dashboardNewEmptyFolder,
 );
+
+// multer aborts the stream and cleans up the partial file itself, so there is
+// nothing to unlink here. this runs before the app-level handler, which renders
+// HTML — these routes are fetched, so they need JSON
+dashboardRouter.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({ error: 'File is larger than 1 GB' });
+    }
+    return res.status(400).json({ error: 'Upload failed' });
+  }
+  next(err);
+});
 
 module.exports = dashboardRouter;

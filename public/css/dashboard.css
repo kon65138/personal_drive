@@ -407,7 +407,6 @@ body {
 
 .meterUsed,
 .meterLeft {
-  padding: 0 0.5rem 0 0.5rem;
   display: flex;
   align-items: center;
   height: 100%;
@@ -415,14 +414,11 @@ body {
 
 .meterUsed {
   min-width: 0px;
-  flex: 0.7;
   background-color: rgb(182, 88, 0);
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
 }
 
 .meterLeft {
-  flex: 0.3;
+  flex: 0;
 }
 
 .storageStats {

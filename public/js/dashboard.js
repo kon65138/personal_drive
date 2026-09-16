@@ -41,13 +41,20 @@ function addfolderRow(folder) {
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const response = await fetch(form.action, {
-    method: 'POST',
-    body: new FormData(form),
-  });
+  try {
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+    });
 
-  if (!response.ok) {
-    console.error('Upload failed', response.status);
+    if (!response.ok) {
+      const { error } = await response.json().catch(() => ({}));
+      console.error('Upload failed', response.status, error);
+      form.reset();
+      return;
+    }
+  } catch (err) {
+    console.error('Upload failed', err);
     form.reset();
     return;
   }
@@ -66,12 +73,19 @@ folderInput.addEventListener('change', async () => {
     body.append('relativePath', file.webkitRelativePath);
     body.append('file', file);
 
-    const response = await fetch('/dashboard/newFile', {
-      method: 'POST',
-      body,
-    });
-    if (!response.ok) {
-      console.error('Upload failed', file.webkitRelativePath);
+    try {
+      const response = await fetch('/dashboard/newFile', {
+        method: 'POST',
+        body,
+      });
+      if (!response.ok) {
+        const { error } = await response.json().catch(() => ({}));
+        console.error('Upload failed', file.webkitRelativePath, error);
+        continue;
+      }
+    } catch (err) {
+      console.error('Upload failed', file.webkitRelativePath, err);
+      continue;
     }
   }
 
@@ -361,8 +375,8 @@ async function updateMeter() {
   if (response2.ok) ({ left, percent } = await response2.json());
   storageUsed.textContent = `Storage used: ${size}`;
   storageLeft.textContent = `Storage left: ${left}`;
-  meterUsed.style.flex = percent;
-  meterLeft.style.flex = 100 - percent;
+  meterUsed.style = `width: ${percent}%;`;
+  meterLeft.style = `width: ${100 - percent}%`;
 }
 
 updateMeter();

@@ -126,6 +126,14 @@ async function ensureFolderPath(ownerId, parentId, segments) {
   return currentId;
 }
 
+async function usedBytes(ownerId) {
+  const { _sum } = await prisma.file.aggregate({
+    where: { ownerId },
+    _sum: { size: true },
+  });
+  return _sum.size ?? 0n;
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -142,4 +150,5 @@ module.exports = {
   deleteFolder,
   deleteFile,
   ensureFolderPath,
+  usedBytes,
 };

@@ -13,6 +13,7 @@ const {
   deleteFolder,
   deleteFile,
   ensureFolderPath,
+  usedBytes,
 } = require('../db/queries');
 const { formatBytes, formatDate } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
@@ -90,6 +91,14 @@ async function dashboardUpload(req, res, next) {
     if (segments.some((s) => s === '' || s === '.' || s === '..')) {
       await removePath(req.file.path);
       return res.status(400).json({ error: 'Invalid folder path' });
+    }
+
+    const capacity = BigInt(process.env.VOLUME_SIZE || 0);
+    const used = await usedBytes(req.user.id);
+
+    if (used + BigInt(req.file.size) > capacity) {
+      await removePath(req.file.path);
+      return res.status(413).json({ error: 'Not enough storage space' });
     }
 
     folderId = await ensureFolderPath(req.user.id, folderId, segments);
@@ -262,15 +271,15 @@ async function dashboardDeleteFile(req, res, next) {
 }
 
 async function dashboardStorage(req, res) {
-  const { size } = await folderSize(req.user.rootFolderId, req.user.id);
+  const used = await usedBytes(req.user.id);
   const capacity = BigInt(process.env.VOLUME_SIZE || 0);
-  const left = capacity > size ? capacity - size : 0n;
+  const left = capacity > used ? capacity - used : 0n;
 
   res.json({
-    used: formatBytes(size),
+    used: formatBytes(used),
     left: formatBytes(left),
     percent:
-      Math.round((capacity > 0n ? Number(size) / Number(capacity) : 0) * 1000) /
+      Math.round((capacity > 0n ? Number(used) / Number(capacity) : 0) * 1000) /
       10,
   });
 }
