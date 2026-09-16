@@ -23,6 +23,32 @@ const meterUsed = document.querySelector('.meterUsed');
 const meterLeft = document.querySelector('.meterLeft');
 const folderInput = document.getElementById('uploadFolder');
 const parentIdInput = form.querySelector('input[name="parentId"]');
+const progressBar = document.getElementById('progressBar');
+const barInside = progressBar.querySelector('.barInside');
+const message = progressBar.querySelector('.message');
+const errorEl = progressBar.querySelector('.error');
+const successEl = progressBar.querySelector('.success');
+const failureEl = progressBar.querySelector('.failure');
+const stopBtn = document.getElementById('stopUpload');
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// the request in flight, so the stop button has something to abort, and a flag
+// so a folder upload stops iterating instead of aborting one file and moving on
+let activeXhr = null;
+let uploadCancelled = false;
+
+// a clean run only needs a beat before the page catches up; a failure has to
+// stay put long enough to actually read
+const DONE_DELAY = 1000;
+const ERROR_DELAY = 4000;
+
+// every way an upload can end — done, failed, stopped — finishes the same way:
+// leave the outcome on screen, then reload so the file list and the storage
+// meter reflect whatever actually landed
+function finishUpload(text, delay = DONE_DELAY) {
+  message.textContent = text;
+  setTimeout(() => location.reload(), delay);
+}
 
 function addfolderRow(folder) {
   const row = folderRowTemplate.content.firstElementChild.cloneNode(true);
@@ -41,25 +67,18 @@ function addfolderRow(folder) {
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
+  uploadCancelled = false;
+
   try {
-    const response = await fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-    });
-
-    if (!response.ok) {
-      const { error } = await response.json().catch(() => ({}));
-      console.error('Upload failed', response.status, error);
-      form.reset();
-      return;
-    }
+    await runUpload(input.files[0], new FormData(form));
+    finishUpload('Upload complete');
   } catch (err) {
-    console.error('Upload failed', err);
     form.reset();
-    return;
-  }
+    if (uploadCancelled) return finishUpload('Upload stopped');
 
-  location.reload();
+    errorEl.textContent = err.message;
+    finishUpload('Upload failed', ERROR_DELAY);
+  }
 });
 
 input.addEventListener('change', () => {
@@ -67,6 +86,14 @@ input.addEventListener('change', () => {
 });
 
 folderInput.addEventListener('change', async () => {
+  let success = 0;
+  let failure = 0;
+  let outOfSpace = false;
+  uploadCancelled = false;
+  errorEl.textContent = '';
+  successEl.textContent = 'Success: 0';
+  failureEl.textContent = 'failure: 0';
+
   for (const file of folderInput.files) {
     const body = new FormData();
     body.append('parentId', parentIdInput.value);
@@ -74,22 +101,29 @@ folderInput.addEventListener('change', async () => {
     body.append('file', file);
 
     try {
-      const response = await fetch('/dashboard/newFile', {
-        method: 'POST',
-        body,
-      });
-      if (!response.ok) {
-        const { error } = await response.json().catch(() => ({}));
-        console.error('Upload failed', file.webkitRelativePath, error);
-        continue;
-      }
+      await runUpload(file, body);
+      successEl.textContent = `Success: ${++success}`;
     } catch (err) {
-      console.error('Upload failed', file.webkitRelativePath, err);
-      continue;
+      // a cancel isn't a failure of this file, and the rest of the folder
+      // shouldn't keep uploading behind the user's back
+      if (uploadCancelled) break;
+
+      errorEl.textContent = `${file.name}: ${err.message}`;
+      failureEl.textContent = `failure: ${++failure}`;
+
+      // the volume won't free up mid-run, so every remaining file would fail
+      // the same way — stop rather than firing hundreds of doomed requests
+      if (err.status === 413) {
+        outOfSpace = true;
+        break;
+      }
     }
   }
 
-  location.reload();
+  if (uploadCancelled) finishUpload('Upload stopped');
+  else if (outOfSpace) finishUpload('Out of storage space', ERROR_DELAY);
+  else if (failure) finishUpload('Upload finished with errors', ERROR_DELAY);
+  else finishUpload('Upload complete');
 });
 
 newFolderForm.addEventListener('submit', async (event) => {
@@ -264,6 +298,19 @@ deleteBtn.addEventListener('click', async () => {
   row.remove();
   clearSelection();
   resetDetails();
+  stopBtn.addEventListener('click', async () => {
+    if (activeXhr) {
+      uploadCancelled = true;
+      activeXhr.abort();
+      return;
+    }
+
+    // nothing in flight, so the button doubles as a dismiss for the failure state
+
+    await pause(1000);
+    location.reload();
+  });
+
   updateMeter();
 });
 
@@ -378,6 +425,74 @@ async function updateMeter() {
   meterUsed.style = `width: ${percent}%;`;
   meterLeft.style = `width: ${100 - percent}%`;
 }
+
+function uploadFile(body, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/dashboard/newFile');
+    activeXhr = xhr;
+
+    const settle = (fn, value) => {
+      activeXhr = null;
+      fn(value);
+    };
+
+    // fires on the request body going out, unlike xhr.onprogress, which
+    // tracks the response coming back
+    xhr.upload.addEventListener('progress', (event) => {
+      // false when the size isn't known up front, which shouldn't happen
+      // for a FormData body but is worth guarding
+      if (event.lengthComputable) {
+        onProgress(event.loaded / event.total);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      let data = {};
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        // a 500 renders HTML, so leave data empty and let status carry it
+      }
+      if (xhr.status >= 200 && xhr.status < 300) return settle(resolve, data);
+
+      const err = new Error(data.error || `Upload failed (${xhr.status})`);
+      err.status = xhr.status;
+      settle(reject, err);
+    });
+
+    xhr.addEventListener('error', () =>
+      settle(reject, new Error('Network error')),
+    );
+    xhr.addEventListener('abort', () =>
+      settle(reject, new Error('Upload cancelled')),
+    );
+
+    xhr.send(body);
+  });
+}
+
+async function runUpload(file, body) {
+  progressBar.style.display = 'flex';
+  message.textContent = file.name;
+
+  try {
+    await uploadFile(body, (fraction) => {
+      barInside.style.width = `${Math.round(fraction * 100)}%`;
+    });
+  } finally {
+    barInside.style.width = '0%';
+  }
+}
+
+stopBtn.addEventListener('click', () => {
+  if (!activeXhr) return;
+
+  // the abort rejects the in-flight upload; the handler's catch reads this flag
+  // to tell a deliberate stop from a real failure
+  uploadCancelled = true;
+  activeXhr.abort();
+});
 
 updateMeter();
 

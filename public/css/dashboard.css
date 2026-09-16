@@ -426,3 +426,62 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+#progressBar {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  top: 80%;
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.bar {
+  width: 30vw;
+  height: 5px;
+  background: var(--bg);
+  border-radius: 20px;
+}
+
+.barInside {
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 20px;
+  transition: width 0.1s linear;
+}
+
+#progressBar .error {
+  color: var(--danger);
+  font-weight: bold;
+  max-width: 30vw;
+  overflow-wrap: anywhere;
+}
+
+/* the panel row reuses .bottom, which the main layout styles as a growing
+   flex row — scope those away so it sizes to its content here */
+#progressBar .bottom {
+  flex: 0;
+  contain: none;
+  justify-content: space-between;
+}
+
+/* no error means no text, and the 1rem gap would leave a blank band */
+#progressBar .error:empty {
+  display: none;
+}
+
+#stopUpload {
+  padding: 0.2rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  color: var(--accent-text);
+  background: var(--danger);
+}
+
+#stopUpload:hover {
+  cursor: pointer;
+}
