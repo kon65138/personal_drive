@@ -497,3 +497,5 @@ stopBtn.addEventListener('click', () => {
 updateMeter();
 
 rootFolder.click();
+
+window;

@@ -509,6 +509,37 @@ body {
   background-color: var(--accent);
 }
 
+#help:focus-visible {
+  outline: none;
+}
+
 #logout {
   background-color: var(--danger);
+}
+
+.help {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  background-color: var(--surface);
+  padding: 1rem;
+  border-radius: 20px;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+}
+
+.help {
+  position: fixed;
+  inset: auto;
+  top: 50vh;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.help:popover-open {
+  display: flex;
+}
+
+.help h3 {
+  text-align: center;
 }

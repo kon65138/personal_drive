@@ -118,7 +118,7 @@
         </div>
         <div class="rightSidebar">
           <div class="helpAndLogoutBtns">
-            <button id="help">Help</button>
+            <button id="help" popovertarget="helpPanel">Help</button>
             <a id="logout" href="/logout">Logout</a>
           </div>
           <div class="storageMeter">
@@ -169,6 +169,14 @@
         <div class="failure">failure: 0</div>
         <button id="stopUpload" type="button">Stop</button>
       </div>
+    </div>
+    <div class="help" id="helpPanel" popover>
+      <h3>Help</h3>
+      <div>Single click to select a file or folder, double click or click while selected to download a file.</div>
+      <div>Navigate through folders in your current directory by using the folder bar, double click to navigate.</div>
+      <div>The upload buttons will place the uploaded file or folder in the current directory.</div>
+      <div>When renamaming hit enter to submit or click away or esc to cancel.</div>
+      <div>You cannot rename or delete Root.</div>
     </div>
   </body>
 </html>
