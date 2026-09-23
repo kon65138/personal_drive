@@ -408,7 +408,8 @@ body {
   background: var(--accent);
 }
 
-#rename.faded {
+#rename:disabled,
+#share:disabled {
   background: var(--accent-faded);
 }
 
@@ -416,12 +417,13 @@ body {
   background: var(--danger);
 }
 
-#delete.faded {
+#delete:disabled {
   background: var(--danger-faded);
 }
 
-#delete.faded:hover,
-#rename.faded:hover {
+/* the global reset sets cursor: pointer on every button, so this has to be
+   restated rather than merely omitted */
+.selectedDetails .buttons button:disabled {
   cursor: not-allowed;
 }
 
@@ -542,4 +544,7 @@ body {
 
 .help h3 {
   text-align: center;
+}
+
+#share {
 }

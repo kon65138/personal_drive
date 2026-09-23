@@ -14,6 +14,7 @@ const loginRouter = require('./routes/loginRouter');
 const signUpRouter = require('./routes/signUpRouter');
 const dashboardRouter = require('./routes/dashboardRouter');
 const logoutRouter = require('./routes/logoutRouter');
+const shareRouter = require('./routes/shareRouter');
 
 require('./config/passport');
 
@@ -64,6 +65,7 @@ app.use('/login', loginRouter);
 app.use('/signUp', signUpRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/logout', logoutRouter);
+app.use('/share', shareRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);

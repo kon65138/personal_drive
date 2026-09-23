@@ -148,9 +148,9 @@
               <div class="items" style="display: none;"></div>
             </div>
             <div class="buttons">
-              <button id="share">Share</button>
-              <button id="rename">Rename</button>
-              <button id="delete">Delete</button>
+              <button id="share" popovertarget="sharePopup" disabled>Share</button>
+              <button id="rename" disabled>Rename</button>
+              <button id="delete" disabled>Delete</button>
             </div>
           </div>
         </div>
@@ -177,6 +177,23 @@
       <div>The upload buttons will place the uploaded file or folder in the current directory.</div>
       <div>When renamaming hit enter to submit or click away or esc to cancel.</div>
       <div>You cannot rename or delete Root.</div>
+    </div>
+    <div id="sharePopup" popover>
+      <h3>Share</h3>
+      <div>Generate a link to share </div>
+      <form id="shareForm" action="">
+        <label for="duration">How log should the link be online?</label>
+        <select name="duration" id="duration">
+          <option value="1h">1 hour</option>
+          <option value="3h">3 hours</option>
+          <option value="12h">12 hours</option>
+          <option value="1d">1 day</option>
+          <option value="1w">1 week</option>
+          <option value="1m">1 month</option>
+        </select>
+        <button id="generate">Generate link</button>
+      </form>
+      <div class="link"></div>
     </div>
   </body>
 </html>

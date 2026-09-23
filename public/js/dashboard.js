@@ -30,6 +30,9 @@ const errorEl = progressBar.querySelector('.error');
 const successEl = progressBar.querySelector('.success');
 const failureEl = progressBar.querySelector('.failure');
 const stopBtn = document.getElementById('stopUpload');
+const shareBtn = document.getElementById('share');
+const sharePopup = document.getElementById('sharePopup');
+const helpPanel = document.getElementById('helpPanel');
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // the request in flight, so the stop button has something to abort, and a flag
@@ -164,6 +167,7 @@ function clearSelection() {
     ?.classList.remove('selected');
   // an in-flight size request must not repopulate a panel nothing is selected in
   delete selectedDetails.dataset.showing;
+  clearDetails();
 }
 
 // clicking away discards whatever was typed rather than creating the folder
@@ -180,8 +184,14 @@ document.addEventListener('keydown', (event) => {
 });
 
 document.addEventListener('click', (event) => {
-  // the + button runs its own toggle, so closing here would immediately undo it
+  const sharePopupStyle = getComputedStyle(sharePopup);
+  const helpPanelStyle = getComputedStyle(helpPanel);
+
+  if (sharePopupStyle.display === 'block' || helpPanelStyle.display === 'block')
+    return;
+
   if (!event.target.closest('.newFolderContainer, #addFolderBtn')) {
+    // the + button runs its own toggle, so closing here would immediately undo it
     closeNewFolderForm();
   }
 
@@ -205,13 +215,12 @@ document.addEventListener('click', (event) => {
 
 async function updateDetails(row) {
   const isFolder = Boolean(row.closest('.folderBar'));
-  if (row.id === 'rootFolder') {
-    deleteBtn.classList.add('faded');
-    renameBtn.classList.add('faded');
-  } else {
-    deleteBtn.classList.remove('faded');
-    renameBtn.classList.remove('faded');
-  }
+
+  // the root is the tree's anchor, so it can be neither renamed nor removed,
+  // and only files can be shared
+  deleteBtn.disabled = row.id === 'rootFolder';
+  renameBtn.disabled = row.id === 'rootFolder';
+  shareBtn.disabled = isFolder;
 
   // stamp what the panel is currently showing, so a size response that arrives
   // after the user has moved on can tell it is stale and bow out
@@ -273,17 +282,7 @@ async function failureMessage(response) {
   return `Request failed (${response.status})`;
 }
 
-function resetDetails() {
-  detailsName.textContent = '';
-  type.textContent = '';
-  detailsSize.textContent = '';
-  updated.textContent = '';
-  added.textContent = '';
-  items.forEach((el) => (el.style.display = 'none'));
-}
-
 deleteBtn.addEventListener('click', async () => {
-  if (deleteBtn.classList.contains('faded')) return;
   const row = selectedRow();
   if (!row) return;
 
@@ -297,7 +296,6 @@ deleteBtn.addEventListener('click', async () => {
 
   row.remove();
   clearSelection();
-  resetDetails();
   stopBtn.addEventListener('click', async () => {
     if (activeXhr) {
       uploadCancelled = true;
@@ -318,8 +316,6 @@ deleteBtn.addEventListener('click', async () => {
 let activeRename = null;
 
 renameBtn.addEventListener('click', () => {
-  if (renameBtn.classList.contains('faded')) return;
-
   const row = selectedRow();
   if (!row) return;
 
@@ -493,6 +489,19 @@ stopBtn.addEventListener('click', () => {
   uploadCancelled = true;
   activeXhr.abort();
 });
+
+function clearDetails() {
+  detailsName.textContent = '--';
+  type.textContent = '--';
+  detailsSize.textContent = '--';
+  updated.textContent = '--';
+  added.textContent = '--';
+  items[1].textContent = '--';
+
+  shareBtn.disabled = true;
+  renameBtn.disabled = true;
+  deleteBtn.disabled = true;
+}
 
 updateMeter();
 
