@@ -79,6 +79,12 @@ dashboardRouter.post(
   dashboardController.dashboardNewEmptyFolder,
 );
 
+dashboardRouter.post(
+  '/files/:id/share',
+  isAuth,
+  dashboardController.dashboardShareFile,
+);
+
 // multer aborts the stream and cleans up the partial file itself, so there is
 // nothing to unlink here. this runs before the app-level handler, which renders
 // HTML — these routes are fetched, so they need JSON

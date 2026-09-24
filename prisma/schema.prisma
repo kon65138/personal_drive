@@ -73,6 +73,22 @@ model File {
   folder     Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId   Int
 
+  shareLinks ShareLink[]
+
   @@unique([folderId, name])
   @@index([ownerId])
+}
+
+// a public, expiring download link for one file. the token, not the file id,
+// goes in the URL: ids are sequential, so /share/42 would invite trying 43
+model ShareLink {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  file      File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId    Int
+
+  @@index([fileId])
 }

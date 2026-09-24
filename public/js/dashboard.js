@@ -54,6 +54,7 @@ function showPopup(popup) {
   if (openPopup && openPopup !== popup) hidePopup();
   popup.classList.add('open');
   popupTrigger(popup)?.setAttribute('aria-expanded', 'true');
+  prepareSharePopup();
   openPopup = popup;
 }
 
@@ -553,9 +554,48 @@ function prepareSharePopup() {
   if (document.querySelector('.selected')) {
     const selected = document.querySelector('.selected');
     const name = selected.querySelector('.name').textContent;
+    sharePopup.querySelector('.link').textContent = '';
     sharePopup.children[1].textContent = `Generate a link to share ${name}`;
   }
 }
+
+shareForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const row = selectedRow();
+  if (!row) return;
+
+  const link = sharePopup.querySelector('.link');
+  link.textContent = 'Generating…';
+
+  // URLSearchParams sends urlencoded, which express.urlencoded parses, same
+  // as the new-folder form
+  const response = await fetch(
+    `/dashboard/files/${encodeURIComponent(row.dataset.id)}/share`,
+    {
+      method: 'POST',
+      body: new URLSearchParams(new FormData(shareForm)),
+    },
+  );
+
+  if (!response.ok) {
+    link.textContent = await failureMessage(response);
+    return;
+  }
+
+  const { url, expiresIn } = await response.json();
+
+  // a new tab, so trying the link doesn't navigate away from the dashboard
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.target = '_blank';
+  anchor.rel = 'noopener';
+  anchor.textContent = url;
+
+  const expiry = document.createElement('div');
+  expiry.textContent = `Expires in ${expiresIn}`;
+
+  link.replaceChildren(anchor, expiry);
+});
 
 updateMeter();
 

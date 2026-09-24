@@ -47,7 +47,10 @@
   // without preventing the submit lets the fade run during the round trip
   document.addEventListener('submit', (event) => {
     if (reduced.matches) return;
-    // forms handled by fetch never navigate, so fading out would strand the page
+    // forms handled by fetch never navigate, so fading out would strand the page.
+    // a form's own submit listener runs before this document-level one, so one
+    // that called preventDefault() is already marked by the time it gets here
+    if (event.defaultPrevented) return;
     if (event.target.closest('[data-no-transition]')) return;
     document.body.classList.add('leaving');
   });

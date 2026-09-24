@@ -3,12 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- absolute paths: this page lives at /share/<token>, so a relative
+         css/ would resolve to /share/css/ -->
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/share.css" />
     <script src="/js/pageTransition.js" defer></script>
-    <title>Personal Drive</title>
+    <title><%= file ? file.name : 'Link unavailable' %> · Rooms</title>
   </head>
   <body>
-    <div>share</div>
+    <main class="shareCard">
+      <% if (file) { %>
+        <h1 class="fileName"><%= file.name %></h1>
+        <div class="fileSize"><%= formatBytes(file.size) %></div>
+        <a class="downloadBtn" href="/share/<%= token %>/download" download>Download</a>
+        <div class="expiry">This link expires in <%= expiresIn %>.</div>
+      <% } else { %>
+        <h1>Link unavailable</h1>
+        <div class="expiry">This link has expired or does not exist.</div>
+      <% } %>
+    </main>
   </body>
 </html>

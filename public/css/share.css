@@ -1,0 +1,45 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  color: var(--text);
+}
+
+.shareCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(28rem, 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  text-align: center;
+}
+
+.shareCard h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  /* long file names wrap instead of stretching the card */
+  overflow-wrap: anywhere;
+}
+
+.fileSize,
+.expiry {
+  color: var(--text-muted);
+}
+
+.downloadBtn {
+  margin-block: 1rem;
+  padding: 0.6rem 2rem;
+  border-radius: 20px;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: bold;
+}
+
+.downloadBtn:hover {
+  background-color: var(--accent-hover);
+}

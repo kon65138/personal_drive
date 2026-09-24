@@ -134,6 +134,19 @@ async function usedBytes(ownerId) {
   return _sum.size ?? 0n;
 }
 
+function createShareLink(data) {
+  return prisma.shareLink.create({ data });
+}
+
+// expiry is checked here rather than by a cleanup job, so a link stops working
+// the moment it lapses even though its row is still in the table
+function findActiveShareLink(token) {
+  return prisma.shareLink.findFirst({
+    where: { token, expiresAt: { gt: new Date() } },
+    include: { file: true },
+  });
+}
+
 module.exports = {
   createFile,
   findFileForOwner,
@@ -151,4 +164,6 @@ module.exports = {
   deleteFile,
   ensureFolderPath,
   usedBytes,
+  createShareLink,
+  findActiveShareLink,
 };

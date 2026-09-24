@@ -553,6 +553,21 @@ body {
   gap: 0.1rem;
 }
 
+#sharePopup .link {
+  max-width: 24rem;
+  /* the token is one long unbroken word */
+  overflow-wrap: anywhere;
+}
+
+#sharePopup .link a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+#sharePopup .link div {
+  color: var(--text-muted);
+}
+
 #duration {
   width: 100%;
   margin-block: 0.3rem 0.6rem;

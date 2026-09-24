@@ -1,3 +1,4 @@
+const crypto = require('node:crypto');
 const { validationResult } = require('express-validator');
 const {
   findFileForOwner,
@@ -14,8 +15,9 @@ const {
   deleteFile,
   ensureFolderPath,
   usedBytes,
+  createShareLink,
 } = require('../db/queries');
-const { formatBytes, formatDate } = require('../lib/format');
+const { formatBytes, formatDate, formatTimeLeft } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
 
 // Resolves the folder a write should land in. The id arrives from the client,
@@ -284,6 +286,43 @@ async function dashboardStorage(req, res) {
   });
 }
 
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
+
+// the client picks a key rather than sending milliseconds, so it can only ask
+// for one of the lifetimes the share popup offers
+const SHARE_DURATIONS = {
+  '1h': HOUR,
+  '3h': 3 * HOUR,
+  '12h': 12 * HOUR,
+  '1d': DAY,
+  '1w': 7 * DAY,
+  '1m': 30 * DAY,
+};
+
+async function dashboardShareFile(req, res) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.sendStatus(404);
+
+  const lifetime = SHARE_DURATIONS[req.body.duration];
+  if (!lifetime) return res.status(400).json({ error: 'Invalid duration' });
+
+  // you can only share your own files
+  const file = await findFileForOwner(id, req.user.id);
+  if (!file) return res.status(404).json({ error: 'File not found' });
+
+  const link = await createShareLink({
+    token: crypto.randomBytes(24).toString('base64url'),
+    expiresAt: new Date(Date.now() + lifetime),
+    fileId: file.id,
+  });
+
+  res.json({
+    url: `${req.protocol}://${req.get('host')}/share/${link.token}`,
+    expiresIn: formatTimeLeft(link.expiresAt),
+  });
+}
+
 module.exports = {
   dashboardGet,
   dashboardFolderGet,
@@ -296,4 +335,5 @@ module.exports = {
   dashboardDeleteFolder,
   dashboardDeleteFile,
   dashboardStorage,
+  dashboardShareFile,
 };
