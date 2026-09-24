@@ -118,7 +118,7 @@
         </div>
         <div class="rightSidebar">
           <div class="helpAndLogoutBtns">
-            <button id="help" popovertarget="helpPanel">Help</button>
+            <button id="help" data-popup="helpPanel" aria-expanded="false">Help</button>
             <a id="logout" href="/logout">Logout</a>
           </div>
           <div class="storageMeter">
@@ -148,7 +148,7 @@
               <div class="items" style="display: none;"></div>
             </div>
             <div class="buttons">
-              <button id="share" popovertarget="sharePopup" disabled>Share</button>
+              <button id="share" data-popup="sharePopup" aria-expanded="false" disabled>Share</button>
               <button id="rename" disabled>Rename</button>
               <button id="delete" disabled>Delete</button>
             </div>
@@ -170,7 +170,7 @@
         <button id="stopUpload" type="button">Stop</button>
       </div>
     </div>
-    <div class="help" id="helpPanel" popover>
+    <div class="popup help" id="helpPanel">
       <h3>Help</h3>
       <div>Single click to select a file or folder, double click or click while selected to download a file.</div>
       <div>Navigate through folders in your current directory by using the folder bar, double click to navigate.</div>
@@ -178,7 +178,7 @@
       <div>When renamaming hit enter to submit or click away or esc to cancel.</div>
       <div>You cannot rename or delete Root.</div>
     </div>
-    <div id="sharePopup" popover>
+    <div class="popup" id="sharePopup">
       <h3>Share</h3>
       <div>Generate a link to share </div>
       <form id="shareForm" action="">

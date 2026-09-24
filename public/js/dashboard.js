@@ -32,13 +32,37 @@ const failureEl = progressBar.querySelector('.failure');
 const stopBtn = document.getElementById('stopUpload');
 const shareBtn = document.getElementById('share');
 const sharePopup = document.getElementById('sharePopup');
-const helpPanel = document.getElementById('helpPanel');
+const shareForm = document.getElementById('shareForm');
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // the request in flight, so the stop button has something to abort, and a flag
 // so a folder upload stops iterating instead of aborting one file and moving on
 let activeXhr = null;
 let uploadCancelled = false;
+
+// the help and share panels behave like popovers — one open at a time, closed
+// by Escape or a click outside — but are plain elements driven from here, so
+// the click handler below always knows the real state instead of racing the
+// browser's own light-dismiss
+let openPopup = null;
+
+function popupTrigger(popup) {
+  return document.querySelector(`[data-popup="${popup.id}"]`);
+}
+
+function showPopup(popup) {
+  if (openPopup && openPopup !== popup) hidePopup();
+  popup.classList.add('open');
+  popupTrigger(popup)?.setAttribute('aria-expanded', 'true');
+  openPopup = popup;
+}
+
+function hidePopup() {
+  if (!openPopup) return;
+  openPopup.classList.remove('open');
+  popupTrigger(openPopup)?.setAttribute('aria-expanded', 'false');
+  openPopup = null;
+}
 
 // a clean run only needs a beat before the page catches up; a failure has to
 // stay put long enough to actually read
@@ -179,20 +203,41 @@ function closeNewFolderForm() {
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
+
+  // Escape peels off one layer at a time: the popup, not the selection under it
+  if (openPopup) {
+    hidePopup();
+    return;
+  }
+
   closeNewFolderForm();
   clearSelection();
 });
 
 document.addEventListener('click', (event) => {
-  const sharePopupStyle = getComputedStyle(sharePopup);
-  const helpPanelStyle = getComputedStyle(helpPanel);
-
-  if (sharePopupStyle.display === 'block' || helpPanelStyle.display === 'block')
-    return;
-
   if (!event.target.closest('.newFolderContainer, #addFolderBtn')) {
     // the + button runs its own toggle, so closing here would immediately undo it
     closeNewFolderForm();
+  }
+
+  // a click that opens, uses, or dismisses a popup is about the popup, not the
+  // file list
+  const trigger = event.target.closest('[data-popup]');
+  if (trigger) {
+    const popup = document.getElementById(trigger.dataset.popup);
+    if (popup === openPopup) hidePopup();
+    else showPopup(popup);
+    return;
+  }
+
+  if (openPopup) {
+    // a dismissing click must not also follow a link underneath — a selected
+    // file row would start a download
+    if (!openPopup.contains(event.target)) {
+      event.preventDefault();
+      hidePopup();
+    }
+    return;
   }
 
   // controls that act on the current selection must not clear it first
@@ -211,6 +256,7 @@ document.addEventListener('click', (event) => {
   clearSelection();
   row.classList.add('selected');
   updateDetails(row);
+  prepareSharePopup();
 });
 
 async function updateDetails(row) {
@@ -501,6 +547,14 @@ function clearDetails() {
   shareBtn.disabled = true;
   renameBtn.disabled = true;
   deleteBtn.disabled = true;
+}
+
+function prepareSharePopup() {
+  if (document.querySelector('.selected')) {
+    const selected = document.querySelector('.selected');
+    const name = selected.querySelector('.name').textContent;
+    sharePopup.children[1].textContent = `Generate a link to share ${name}`;
+  }
 }
 
 updateMeter();

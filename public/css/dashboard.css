@@ -519,8 +519,16 @@ body {
   background-color: var(--danger);
 }
 
-.help {
-  position: absolute;
+/* ---------------------------------------------------------------------------
+   popups (help, share) — opened and dismissed by dashboard.js
+   --------------------------------------------------------------------------- */
+
+.popup {
+  position: fixed;
+  top: 50vh;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 100;
   display: none;
   flex-direction: column;
   background-color: var(--surface);
@@ -530,21 +538,59 @@ body {
   border: 1px solid var(--border);
 }
 
-.help {
-  position: fixed;
-  inset: auto;
-  top: 50vh;
-  left: 50%;
-  translate: -50% -50%;
-}
-
-.help:popover-open {
+.popup.open {
   display: flex;
 }
 
-.help h3 {
+.popup h3 {
   text-align: center;
+  margin: 1rem 0 1rem 0;
 }
 
-#share {
+#shareForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+#duration {
+  width: 100%;
+  margin-block: 0.3rem 0.6rem;
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 1rem) 50%,
+    calc(100% - 0.7rem) 50%;
+  background-size: 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+#duration:hover,
+#duration:focus-visible {
+  border-color: var(--accent);
+}
+
+#duration:focus-visible {
+  outline: none;
+}
+
+/* the open list is drawn by the OS, which ignores most styling but does take
+   colours — without these it stays light-themed in dark mode */
+#duration option {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+#generate {
+  align-self: center;
+  border-radius: 20px;
+  padding: 0.4rem;
+  background-color: var(--accent);
+  width: fit-content;
+  font-weight: bold;
 }
