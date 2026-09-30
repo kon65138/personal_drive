@@ -1,5 +1,6 @@
 const { body } = require('express-validator');
 const { prisma } = require('../lib/prisma');
+const { hasRoomForNewUser } = require('../lib/quota');
 
 async function isUsernameDuplicate(value) {
   const user = await prisma.user.findUnique({
@@ -10,11 +11,19 @@ async function isUsernameDuplicate(value) {
   }
 }
 
+async function isThereSpace() {
+  if (!(await hasRoomForNewUser())) {
+    throw new Error('Sign-ups are closed: the drive is full');
+  }
+}
+
 function matchPassword(value, { req }) {
   return value === req.body.password;
 }
 
 const signUpValidator = [
+  // form-level: not about any one field, so body() with no path
+  body().custom(isThereSpace),
   body('firstName').trim().isLength({ max: 50 }),
   body('username')
     .trim()

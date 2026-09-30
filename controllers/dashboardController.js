@@ -14,11 +14,11 @@ const {
   deleteFolder,
   deleteFile,
   ensureFolderPath,
-  usedBytes,
   createShareLink,
 } = require('../db/queries');
 const { formatBytes, formatDate, formatTimeLeft } = require('../lib/format');
 const { filePath, removePath } = require('../lib/storage');
+const { capacityFor, storageFor, quotaError } = require('../lib/quota');
 
 // Resolves the folder a write should land in. The id arrives from the client,
 // so it is only trusted after confirming it belongs to the requesting user —
@@ -49,7 +49,7 @@ async function renderFolder(req, res, folderId) {
     currentFolders: folder.children,
     currentFolderContent: folder.files,
     rootFolder,
-    storageSize: formatBytes(BigInt(process.env.VOLUME_SIZE)),
+    storageSize: formatBytes(capacityFor(req.user)),
   });
 }
 
@@ -95,12 +95,12 @@ async function dashboardUpload(req, res, next) {
       return res.status(400).json({ error: 'Invalid folder path' });
     }
 
-    const capacity = BigInt(process.env.VOLUME_SIZE || 0);
-    const used = await usedBytes(req.user.id);
-
-    if (used + BigInt(req.file.size) > capacity) {
+    // the file is on disk but not yet in the database, so neither total
+    // counts it — which is exactly what the check needs
+    const error = await quotaError(req.user, BigInt(req.file.size));
+    if (error) {
       await removePath(req.file.path);
-      return res.status(413).json({ error: 'Not enough storage space' });
+      return res.status(413).json({ error });
     }
 
     folderId = await ensureFolderPath(req.user.id, folderId, segments);
@@ -273,9 +273,7 @@ async function dashboardDeleteFile(req, res, next) {
 }
 
 async function dashboardStorage(req, res) {
-  const used = await usedBytes(req.user.id);
-  const capacity = BigInt(process.env.VOLUME_SIZE || 0);
-  const left = capacity > used ? capacity - used : 0n;
+  const { used, capacity, left } = await storageFor(req.user);
 
   res.json({
     used: formatBytes(used),

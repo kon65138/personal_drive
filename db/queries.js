@@ -134,6 +134,14 @@ async function usedBytes(ownerId) {
   return _sum.size ?? 0n;
 }
 
+// every user's files together — what is actually on the volume
+async function totalUsedBytes() {
+  const { _sum } = await prisma.file.aggregate({
+    _sum: { size: true },
+  });
+  return _sum.size ?? 0n;
+}
+
 function createShareLink(data) {
   return prisma.shareLink.create({ data });
 }
@@ -164,6 +172,7 @@ module.exports = {
   deleteFile,
   ensureFolderPath,
   usedBytes,
+  totalUsedBytes,
   createShareLink,
   findActiveShareLink,
 };
